@@ -22,9 +22,15 @@ body{
   box-sizing: border-box;
 }
 
-.no-scrollbar::-webkit-scrollbar {
+a{
+  text-decoration: none;
+}
+
+.scroll-hide::-webkit-scrollbar {
   display: none;
 }
-.no-scrollbar {
+
+.scroll-hide {
+  -ms-overflow-style: none;
   scrollbar-width: none;
 }
