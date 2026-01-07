@@ -14,7 +14,7 @@ import DrawingAttachment from "../app/DrawingAttachment";
 import Login from "../components/home/login";
 import ProfilePage from "../app/Profile";
 import SettingPage from "../app/Settings";
-import ForgotPassword from "../components/home/ForgotPassword";
+import ForgotPassword from "../components/home/forgotpassword";
 
 const AppRoutes = () => {
   return (
