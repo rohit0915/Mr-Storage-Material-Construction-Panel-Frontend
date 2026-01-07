@@ -24,7 +24,7 @@ export const SIDEBAR_TABS: SidebarTab[] = [
   {
     key: "dashboard",
     icon: DashboardIcon,
-    path: "/",
+    path: "/dashboard",
     label: "Dashboard",
     bg: "#FD8D5B",
   },
@@ -85,9 +85,6 @@ export default function Sidebar({ open, setOpen }: Props) {
 
   const activeTab =
     SIDEBAR_TABS.find((tab) => {
-      if (tab.key === "dashboard") {
-        return location.pathname === "/";
-      }
 
       if (tab.key === "materials") {
         return (
@@ -105,7 +102,7 @@ export default function Sidebar({ open, setOpen }: Props) {
       }
 
       return location.pathname.startsWith(tab.path);
-    })?.key || "dashboard";
+    })?.key || "/";
 
   return (
     <>

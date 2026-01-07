@@ -20,6 +20,9 @@ export default function NewTaskModel({
 }: IssueReportingModalProps) {
   if (!open) return null;
   const [status, setStatus] = useState("all");
+  const [status2, setStatus2] = useState("all");
+  const [status3, setStatus3] = useState("all");
+  const [status4, setStatus4] = useState("all");
 
   return (
     <div
@@ -68,15 +71,15 @@ export default function NewTaskModel({
               <CustomSelect
                 title="All Requests"
                 options={projectFilterOptions}
-                value={status}
-                onChange={setStatus}
+                value={status2}
+                onChange={setStatus2}
                 width="100%"
               />
             </div>
 
             <div>
               <label className="text-sm text-[#111827]">Deadline</label>
-              <input
+              <input type="date"
                 placeholder="dd - mm - yyyy"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
               />
@@ -91,8 +94,8 @@ export default function NewTaskModel({
               <CustomSelect
                 title="All Requests"
                 options={projectFilterOptions}
-                value={status}
-                onChange={setStatus}
+                value={status3}
+                onChange={setStatus3}
                 width="100%"
               />
             </div>
@@ -104,8 +107,8 @@ export default function NewTaskModel({
               <CustomSelect
                 title="All Requests"
                 options={projectFilterOptions}
-                value={status}
-                onChange={setStatus}
+                value={status4}
+                onChange={setStatus4}
                 width="100%"
               />
             </div>
@@ -128,7 +131,7 @@ export default function NewTaskModel({
           >
             Cancel
           </button>
-          <button className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
             Create Task
           </button>
         </div>

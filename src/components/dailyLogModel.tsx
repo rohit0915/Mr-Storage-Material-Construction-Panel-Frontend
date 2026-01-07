@@ -41,10 +41,11 @@ export default function DailyLogModel({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm text-[#111827]">Date</label>
-              <input
+              <input type="date"
                 placeholder="dd - mm - yyyy"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
               />
+              
             </div>
 
             <div>
@@ -123,8 +124,8 @@ export default function DailyLogModel({
           >
             Cancel
           </button>
-          <button className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
-            Report Now
+          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+            Create
           </button>
         </div>
       </div>

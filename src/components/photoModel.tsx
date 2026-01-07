@@ -1,4 +1,4 @@
-import UploadIcon from "../assets/uploadicon copy.svg";
+import cameraicon from "../assets/uploadcameraicon.svg";
 
 type IssueReportingModalProps = {
   open: boolean;
@@ -28,10 +28,11 @@ export default function PhotoModel({
         </div>
 
         <div className="p-6 space-y-3">
+          <p>Upload Photo</p>
           <div className="border-2 border-dashed rounded-lg p-6 flex items-center justify-center text-center gap-2">
             <div className="flex-1 flex flex-col gap-3 items-center justify-center">
               <div className="text-2xl">
-                <img src={UploadIcon} alt="" />
+                <img src={cameraicon} alt="" className="w-10" />
               </div>
               <p className="text-sm text-[#6B7280]">
                 Click to upload photos or drag and drop
@@ -40,24 +41,17 @@ export default function PhotoModel({
                 PNG, JPG up to 10MB each
               </p>
             </div>
-
-            <div className="flex-1 flex justify-center items-center">
-              <button className="mt-2 bg-[#6B7280] text-white px-6 py-2 rounded-lg text-sm">
-                Choose file
-              </button>
-            </div>
           </div>
         </div>
 
         <div className="px-6 py-4 border-t flex justify-end gap-3">
-          <button
-            onClick={onClose}
+          <button onClick={onClose}
             className="px-6 py-2 rounded-lg bg-[#F3F4F6] text-[#111827]"
           >
             Cancel
           </button>
-          <button className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
-            Report Now
+          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+            Send
           </button>
         </div>
       </div>

@@ -114,7 +114,7 @@ export default function IssueReportingModal({
           >
             Cancel
           </button>
-          <button className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
             Report Now
           </button>
         </div>

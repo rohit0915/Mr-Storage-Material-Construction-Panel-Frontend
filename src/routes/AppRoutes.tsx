@@ -11,12 +11,20 @@ import Notifications from "../app/Notifications";
 import MaterialsViewPage from "../app/MaterialsViewPage";
 import ProjectViewPage from "../app/ProjectViewPage"; 
 import DrawingAttachment from "../app/DrawingAttachment";
+import Login from "../components/home/login";
+import ProfilePage from "../app/Profile";
+import SettingPage from "../app/Settings";
+import ForgotPassword from "../components/home/ForgotPassword";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<PublicRoute />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/settings" element={<SettingPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/project-view-page" element={<ProjectViewPage />} />
         <Route path="/drawing-attachment" element={<DrawingAttachment />} />
