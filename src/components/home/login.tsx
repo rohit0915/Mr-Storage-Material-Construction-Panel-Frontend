@@ -54,12 +54,11 @@ function Login() {
           <Button title="Login" type="submit" className="w-full" />
 
           <div className="flex justify-end pt-2">
-            <a
-              href="/forgot-password"
-              className="text-sm font-normal text-[#1d7bd8] hover:opacity-80 transition-colors"
+            <span onClick={()=>navigate("/forgot-password")}
+              className="text-sm font-normal text-[#1d7bd8] hover:opacity-80 transition-colors cursor-pointer"
             >
               Forgot Password?
-            </a>
+            </span>
           </div>
         </form>
       </div>
