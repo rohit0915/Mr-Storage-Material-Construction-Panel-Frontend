@@ -1,18 +1,36 @@
+import { useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 
-export default function ResourceUtilizationDistribution() {
-  const colors = [
-    "#3B82F6", // Labor
-    "#3B82F6", // Material
-    "#3B82F6", // Equipment
-    "#3B82F6", // Admin
-  ];
+export default function ResourceUtilizationDistribution({
+  project,
+  manager,
+  startDate,
+  endDate,
+}: any) {
+  const utilization = useMemo(() => {
+    return {
+      labor: Math.floor(Math.random() * 20) + 70,
+      equipment: Math.floor(Math.random() * 20) + 70,
+      material: Math.floor(Math.random() * 20) + 70,
+      admin: Math.floor(Math.random() * 30) + 50,
+    };
+  }, [project, manager, startDate, endDate]);
+
+  const total =
+    Math.round(
+      (utilization.labor +
+        utilization.equipment +
+        utilization.material +
+        utilization.admin) /
+        4
+    );
+
+  const colors = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"];
 
   const option = {
     tooltip: { show: false },
 
     series: [
-      // 🔹 Base grey ring
       {
         type: "pie",
         radius: ["65%", "80%"],
@@ -27,7 +45,6 @@ export default function ResourceUtilizationDistribution() {
         ],
       },
 
-      // 🔹 Colored ticks + gaps
       {
         type: "pie",
         radius: ["65%", "80%"],
@@ -38,27 +55,12 @@ export default function ResourceUtilizationDistribution() {
         label: { show: false },
         labelLine: { show: false },
 
-        data: colors.flatMap((c:any) => [
-          {
-            value: 0.3, 
-            itemStyle: { color: "#F59E0B" },
-          },
-          {
-            value: 1.2, 
-            itemStyle: {
-              color: c,
-            },
-          },
-          {
-            value: 0.3, 
-            itemStyle: { color: "#F59E0B" },
-          },
-          {
-            value: 4.8,
-            itemStyle: { color: "transparent" },
-          },
+        data: colors.flatMap((c: any) => [
+          { value: 0.3, itemStyle: { color: "#F59E0B" } },
+          { value: 1.2, itemStyle: { color: c } },
+          { value: 0.3, itemStyle: { color: "#F59E0B" } },
+          { value: 4.8, itemStyle: { color: "transparent" } },
         ]),
-
       },
     ],
   };
@@ -74,17 +76,15 @@ export default function ResourceUtilizationDistribution() {
         </h3>
       </div>
 
-      {/* Chart */}
       <div className="relative h-[260px]">
         <ReactECharts
           option={option}
           style={{ height: "100%", width: "100%" }}
         />
 
-        {/* Center text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-[28px] font-semibold text-[#111827]">
-            80%
+            {total}%
           </p>
           <p className="text-[14px] text-gray-500">
             Total Utilization
@@ -92,12 +92,11 @@ export default function ResourceUtilizationDistribution() {
         </div>
       </div>
 
-      {/* Legend */}
       <div className="px-6 pb-6 grid grid-cols-2 gap-y-4 gap-x-10">
-        <Legend color="#3B82F6" label="Labor" value="78%" />
-        <Legend color="#10B981" label="Equipment" value="85%" />
-        <Legend color="#F59E0B" label="Material" value="92%" />
-        <Legend color="#8B5CF6" label="Admin" value="65%" />
+        <Legend color="#3B82F6" label="Labor" value={`${utilization.labor}%`} />
+        <Legend color="#10B981" label="Equipment" value={`${utilization.equipment}%`} />
+        <Legend color="#F59E0B" label="Material" value={`${utilization.material}%`} />
+        <Legend color="#8B5CF6" label="Admin" value={`${utilization.admin}%`} />
       </div>
     </div>
   );

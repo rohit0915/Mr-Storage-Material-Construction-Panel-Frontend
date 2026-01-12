@@ -1,6 +1,38 @@
 import ReactECharts from "echarts-for-react";
+import { useMemo } from "react";
 
-export default function PlannedVsActualChart() {
+export default function PlannedVsActualChart({project,manager,startDate,endDate}:any) {
+     const chartData = useMemo(() => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+
+    let planned = [];
+    let actual = [];
+
+    let lastPlanned = 0;
+    let lastActual = 0;
+
+    for (let i = 0; i < months.length; i++) {
+      lastPlanned = Math.min(
+        100,
+        lastPlanned + Math.floor(Math.random() * 20 + 5)
+      );
+      lastActual = Math.min(
+        100,
+        lastActual + Math.floor(Math.random() * 18 + 4)
+      );
+
+      planned.push(lastPlanned);
+      actual.push(lastActual);
+    }
+
+    return {
+      months,
+      planned,
+      actual,
+    };
+  }, [project, manager, startDate, endDate]);
+
+
   const option = {
     tooltip: {
       trigger: "axis",
@@ -58,7 +90,7 @@ export default function PlannedVsActualChart() {
 
     xAxis: {
       type: "category",
-      data: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
+      data: chartData.months,
       axisTick: { show: false },
       axisLine: { show: false },
       axisLabel: {
@@ -89,7 +121,7 @@ export default function PlannedVsActualChart() {
         name: "Planned",
         type: "line",
         smooth: true,
-        data: [10, 25, 40, 55, 70, 85, 100],
+        data: chartData.planned,
         symbol: "circle",
         symbolSize: 10,
         lineStyle: {
@@ -104,7 +136,7 @@ export default function PlannedVsActualChart() {
         name: "Actual",
         type: "line",
         smooth: true,
-        data: [8, 22, 35, 48, 62, 75, 88],
+        data: chartData.actual,
         symbol: "circle",
         symbolSize: 10,
         lineStyle: {

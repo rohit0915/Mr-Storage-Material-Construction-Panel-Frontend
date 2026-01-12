@@ -123,7 +123,7 @@ export default function Communication() {
                       <img src={MegaphoneIcon} alt="" />
                     </div>
 
-                    <span className="flex-1 text-sm font-medium text-[#111827] text-sm">
+                    <span className="flex-1 text-sm font-medium text-[#111827]">
                       {item.name}
                     </span>
 
@@ -182,7 +182,7 @@ export default function Communication() {
                   <div className="text-gray-300 text-6xl mb-4">
                     <img src={ChatIcon} alt="" />
                   </div>
-                  <p className="text-lg font-medium text-[#111827] text-sm">
+                  <p className="text-lg font-medium text-[#111827]">
                     Select a chat to start messaging
                   </p>
                   <p className="text-base text-[#6B7280] mt-2">

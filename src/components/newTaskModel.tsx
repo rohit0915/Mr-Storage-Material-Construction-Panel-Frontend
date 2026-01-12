@@ -4,25 +4,87 @@ import CustomSelect from "./common/CustomSelect";
 type IssueReportingModalProps = {
   open: boolean;
   onClose: () => void;
+  onSubmit: (data: any) => void;
 };
 
-const projectFilterOptions = [
-  { label: "All Projects", value: "all" },
-  { label: "Downtown Office Complex", value: "PRJ-001" },
-  { label: "Residential Tower A", value: "PRJ-002" },
-  { label: "Shopping Mall Renovation", value: "PRJ-003" },
-  { label: "Industrial Warehouse", value: "PRJ-004" },
+const projectOptions = [
+  { label: "Downtown Office Complex", value: "Downtown Office Complex" },
+  { label: "Residential Tower A", value: "Residential Tower A" },
+  { label: "Shopping Mall Renovation", value: "Shopping Mall Renovation" },
+  { label: "Industrial Warehouse", value: "Industrial Warehouse" },
+];
+
+const assigneeOptions = [
+  { label: "John Doe", value: "john" },
+  { label: "Sarah Smith", value: "sarah" },
+  { label: "Michael Lee", value: "michael" },
+];
+
+const priorityOptions = [
+  { label: "Low", value: "low" },
+  { label: "Medium", value: "medium" },
+  { label: "High", value: "high" },
+];
+
+const statusOptions = [
+  { label: "To Do", value: "todo" },
+  { label: "In Progress", value: "inProgress" },
+  { label: "Done", value: "done" },
 ];
 
 export default function NewTaskModel({
   open,
   onClose,
+  onSubmit,
 }: IssueReportingModalProps) {
   if (!open) return null;
-  const [status, setStatus] = useState("all");
-  const [status2, setStatus2] = useState("all");
-  const [status3, setStatus3] = useState("all");
-  const [status4, setStatus4] = useState("all");
+
+  const [taskName, setTaskName] = useState("");
+  const [selectedProject, setSelectedProject] = useState("PRJ-001");
+  const [assignedTo, setAssignedTo] = useState("john");
+  const [priority, setPriority] = useState("medium");
+  const [taskStatus, setTaskStatus] = useState("todo");
+  const [deadline, setDeadline] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [error, setError] = useState(""); 
+
+  const handleCreate = () => {
+    if (
+      !taskName.trim() ||
+      !selectedProject ||
+      !assignedTo ||
+      !priority ||
+      !taskStatus ||
+      !deadline ||
+      !description.trim()
+    ) {
+      setError("Please fill all required fields!");
+      return;
+    }
+
+    const data = {
+      taskName,
+      project: selectedProject,
+      assignedTo,
+      priority,
+      status: taskStatus,
+      deadline,
+      description,
+    };
+
+    onSubmit(data);
+    onClose();
+
+    setTaskName("");
+    setSelectedProject("PRJ-001");
+    setAssignedTo("unassigned");
+    setPriority("medium");
+    setTaskStatus("todo");
+    setDeadline("");
+    setDescription("");
+    setError("");
+  };
 
   return (
     <div
@@ -34,9 +96,10 @@ export default function NewTaskModel({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="lg:px-6 px-3 py-4 border-b">
-          <h2 className="text-lg font-semibold text-[#111827]">
-            New Task
-          </h2>
+          <h2 className="text-lg font-semibold text-[#111827]">New Task</h2>
+          {error && (
+            <p className="text-sm text-red-600 mt-2">{error}</p>
+          )}
         </div>
 
         <div className="px-6 py-4 space-y-3">
@@ -44,6 +107,8 @@ export default function NewTaskModel({
             <div>
               <label className="text-sm text-[#111827]">Task Name</label>
               <input
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
                 placeholder="Enter"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
               />
@@ -54,10 +119,10 @@ export default function NewTaskModel({
                 Project
               </label>
               <CustomSelect
-                title="All Requests"
-                options={projectFilterOptions}
-                value={status}
-                onChange={setStatus}
+                title="Select Project"
+                options={projectOptions}
+                value={selectedProject}
+                onChange={setSelectedProject}
                 width="100%"
               />
             </div>
@@ -69,17 +134,20 @@ export default function NewTaskModel({
                 Assigned To
               </label>
               <CustomSelect
-                title="All Requests"
-                options={projectFilterOptions}
-                value={status2}
-                onChange={setStatus2}
+                title="Select Assignee"
+                options={assigneeOptions}
+                value={assignedTo}
+                onChange={setAssignedTo}
                 width="100%"
               />
             </div>
 
             <div>
               <label className="text-sm text-[#111827]">Deadline</label>
-              <input type="date"
+              <input
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
                 placeholder="dd - mm - yyyy"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
               />
@@ -92,10 +160,10 @@ export default function NewTaskModel({
                 Priority
               </label>
               <CustomSelect
-                title="All Requests"
-                options={projectFilterOptions}
-                value={status3}
-                onChange={setStatus3}
+                title="Select Priority"
+                options={priorityOptions}
+                value={priority}
+                onChange={setPriority}
                 width="100%"
               />
             </div>
@@ -105,10 +173,10 @@ export default function NewTaskModel({
                 Status
               </label>
               <CustomSelect
-                title="All Requests"
-                options={projectFilterOptions}
-                value={status4}
-                onChange={setStatus4}
+                title="Select Status"
+                options={statusOptions}
+                value={taskStatus}
+                onChange={setTaskStatus}
                 width="100%"
               />
             </div>
@@ -117,6 +185,8 @@ export default function NewTaskModel({
           <div>
             <label className="text-sm text-[#111827]">Description</label>
             <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the work"
               rows={4}
               className="mt-2 w-full rounded-[8px] border px-4 py-3 outline-none resize-none text-sm"
@@ -131,7 +201,10 @@ export default function NewTaskModel({
           >
             Cancel
           </button>
-          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+          <button
+            onClick={handleCreate}
+            className="px-6 py-2 rounded-lg bg-[#2563EB] text-white"
+          >
             Create Task
           </button>
         </div>

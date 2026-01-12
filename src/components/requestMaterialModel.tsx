@@ -1,9 +1,15 @@
 import { useState } from "react";
 import CustomSelect from "./common/CustomSelect";
+import { inputStyle } from "./projects/RecentProjects";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs, { Dayjs } from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 type IssueReportingModalProps = {
   open: boolean;
   onClose: () => void;
+  onCreate?: (data: any) => void;
 };
 
 const projectFilterOptions = [
@@ -17,13 +23,25 @@ const projectFilterOptions = [
 export default function RequestMaterialModel({
   open,
   onClose,
+  onCreate,
 }: IssueReportingModalProps) {
   if (!open) return null;
-  const [status, setStatus] = useState("all");
-
+  const [date, setDate] = useState<Dayjs | null>(null);
+  const [project, setProject] = useState("PRJ-001");
+  const [material, setMaterial] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [description, setDescription] = useState("");
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="md:max-w-[640px] w-[96%] bg-white rounded-xl shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      onClick={onClose}
+    >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+      
+      <div
+        className="md:max-w-[640px] w-[96%] bg-white rounded-xl shadow-lg overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="lg:px-6 px-3 py-4 border-b">
           <h2 className="text-lg font-semibold text-[#111827]">
             Request Material
@@ -33,55 +51,65 @@ export default function RequestMaterialModel({
         <div className="p-6 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-[#111827]">Date</label>
-              <input
-                placeholder="dd - mm - yyyy"
-                className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+              <label className="text-sm text-[#111827] mb-2 inline-block">Date</label>
+           
+                <DatePicker
+                value={date}
+                onChange={setDate}
+                format="DD-MM-YYYY"
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    sx: inputStyle,
+                  },
+                }}
               />
             </div>
 
             <div>
-              <label className="text-sm text-[#111827] inline-block mb-2">Project</label>
+              <label className="text-sm text-[#111827] inline-block mb-2">
+                Project
+              </label>
               <CustomSelect
                 title="All Requests"
                 options={projectFilterOptions}
-                value={status}
-                onChange={setStatus}
+                value={project}
+                onChange={setProject}
                 width="100%"
-               />
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-[#111827]">
-                Material Name
-              </label>
+              <label className="text-sm text-[#111827]">Material Name</label>
               <input
                 placeholder="e.g., Steel Beams"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
               />
             </div>
 
             <div>
-              <label className="text-sm text-[#111827]">
-                Quantity
-              </label>
+              <label className="text-sm text-[#111827]">Quantity</label>
               <input
                 placeholder="e.g., 50 units"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
               />
             </div>
           </div>
 
           <div>
-            <label className="text-sm text-[#111827]">
-              Description
-            </label>
+            <label className="text-sm text-[#111827]">Description</label>
             <textarea
               placeholder="Please provide the grade A steel."
               rows={4}
               className="mt-2 w-full rounded-[8px] border px-4 py-3 outline-none resize-none text-sm"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
         </div>
@@ -93,11 +121,37 @@ export default function RequestMaterialModel({
           >
             Cancel
           </button>
-          <button onClick={onClose} className="px-6 py-2 rounded-lg bg-[#2563EB] text-white">
+          <button
+            onClick={() => {
+              const formattedDate = date ? dayjs(date).format("DD-MM-YYYY") : "TBD";
+
+              onCreate?.({
+                id: Date.now().toString(),
+                requestNo: `MR-${Math.floor(100 + Math.random() * 900)}`,
+                requestedBy: "You",
+                projectName:
+                  project === "PRJ-001"
+                    ? "Downtown Office Complex"
+                    : "Residential Tower A",
+                projectCode: project,
+                material,
+                quantity,
+                spec: description,
+                needBy: formattedDate,
+                delivery: "TBD",
+                status: "Pending",
+                supplier: "—",
+              });
+
+              onClose();
+            }}
+            className="px-6 py-2 rounded-lg bg-[#2563EB] text-white"
+          >
             Create
           </button>
         </div>
       </div>
+      </LocalizationProvider>
     </div>
   );
 }

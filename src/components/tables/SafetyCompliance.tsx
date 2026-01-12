@@ -1,7 +1,21 @@
+import { useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 
-export default function SafetyComplianceOverTime() {
-  const data = [95, 92, 98, 89, 94, 96, 91, 97];
+export default function SafetyComplianceOverTime({
+  project,
+  manager,
+  startDate,
+  endDate,
+}: any) {
+  const data = useMemo(() => {
+    return Array.from({ length: 8 }, () =>
+      Math.floor(Math.random() * 15) + 85
+    );
+  }, [project, manager, startDate, endDate]);
+
+  const safeWeeks = data.filter((v) => v >= 95).length;
+  const warningWeeks = data.filter((v) => v >= 90 && v < 95).length;
+  const totalIncidents = data.filter((v) => v < 90).length * 2;
 
   const option = {
     tooltip: {
@@ -90,7 +104,7 @@ export default function SafetyComplianceOverTime() {
           width: 2,
         },
       },
-        {
+      {
         name: "Warning (90-94%)",
         color: "#F97316",
         type: "line",
@@ -112,7 +126,7 @@ export default function SafetyComplianceOverTime() {
           width: 2,
         },
       },
-        {
+      {
         name: "Critical (<90%)",
         color: "#EF4444",
         type: "line",
@@ -148,26 +162,30 @@ export default function SafetyComplianceOverTime() {
         </h3>
       </div>
 
-      <div className="">
-        <ReactECharts
-          option={option}
-          style={{ height: 360 }}
-          notMerge
-          lazyUpdate
-        />
-      </div>
+      <ReactECharts
+        option={option}
+        style={{ height: 360 }}
+        notMerge
+        lazyUpdate
+      />
 
       <div className="px-6 pb-4 grid grid-cols-3 text-center">
         <div>
-          <p className="text-[20px] font-semibold text-green-600">4</p>
+          <p className="text-[20px] font-semibold text-green-600">
+            {safeWeeks}
+          </p>
           <p className="text-[14px] text-gray-500">Safe Weeks</p>
         </div>
         <div>
-          <p className="text-[20px] font-semibold text-orange-500">3</p>
+          <p className="text-[20px] font-semibold text-orange-500">
+            {warningWeeks}
+          </p>
           <p className="text-[14px] text-gray-500">Warning Weeks</p>
         </div>
         <div>
-          <p className="text-[20px] font-semibold text-red-500">10</p>
+          <p className="text-[20px] font-semibold text-red-500">
+            {totalIncidents}
+          </p>
           <p className="text-[14px] text-gray-500">Total Incidents</p>
         </div>
       </div>

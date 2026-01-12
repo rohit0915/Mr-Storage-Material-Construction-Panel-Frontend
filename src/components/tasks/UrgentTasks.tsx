@@ -1,34 +1,37 @@
-export default function UrgentTasks() {
+export default function UrgentTasks({project}:any) {
   const tasks = [
     {
       title: "Foundation Inspection",
-      project: "Downtown Office",
+      project: "Downtown Office Complex",
       deadline: "2024-01-20",
       priority: "High",
       badgeBg: "bg-[#FEE2E2]",
       badgeText: "text-[#991B1B]",
+      code: "PRJ-001",
     },
     {
       title: "Material Delivery",
-      project: "Residential Tower",
+      project: "Residential Tower A",
       deadline: "2024-01-20",
       priority: "Medium",
       badgeBg: "bg-[#FEF9C3]",
       badgeText: "text-[#854D0E]",
+      code: "PRJ-002",
     },
     {
       title: "Safety Audit",
-      project: "Mall Renovation",
+      project: "Shopping Mall Renovation",
       deadline: "2024-01-20",
       priority: "High",
       badgeBg: "bg-[#FEE2E2]",
       badgeText: "text-[#991B1B]",
+      code: "PRJ-003",
     },
   ];
-
+const filterTask=project==="all"?tasks:tasks.filter((i)=>i.code===project )
   return (
     <div
-      className="rounded-[8px] bg-white border border-[#F3F4F6]
+      className="rounded-[8px] bg-white border border-[#F3F4F6] h-full
       shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.1),_0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
     >
       <div className="lg:px-6 px-3 py-4 border-b border-[#E5E7EB]">
@@ -38,7 +41,9 @@ export default function UrgentTasks() {
       </div>
 
       <div className="lg:p-6 p-3 lg:space-y-6 space-y-3">
-        {tasks.map((task, idx) => (
+        {
+        
+        filterTask.map((task, idx) => (
           <div key={idx} className="flex items-start gap-4 border-l-4 border-[#F87171] lg:pl-5 pl-2">
             <div className="flex-1">
               <p className="text-[16px] text-[#111827]">
@@ -62,9 +67,10 @@ export default function UrgentTasks() {
             </div>
           </div>
         ))}
+        {filterTask.length==0 && <p className="text-center text-sm text-[#6B7280] py-8">No Task Found</p>}
       </div>
 
-      <div className="pb-4 text-center">
+      <div className="pb-4 text-center mt-auto">
         <button className="text-[#2563EB] text-[14px]">
           View All Tasks
         </button>

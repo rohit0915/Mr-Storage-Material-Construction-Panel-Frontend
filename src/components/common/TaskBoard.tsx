@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DailyLogModel from "../dailyLogModel";
 import NewTaskModel from "../newTaskModel";
 import RightCheckIcon from "../../assets/RightTickIcon";
+
 type TaskPriority = "High" | "Medium" | "Low";
 
 type Task = {
@@ -13,9 +14,10 @@ type Task = {
   due?: string;
   assignee: string;
   progress?: number;
+  status?: "todo" | "inProgress" | "done"; // ✅ add status field
 };
 
-const tasks: {
+const initialTasks: {
   todo: Task[];
   inProgress: Task[];
   done: Task[];
@@ -29,6 +31,7 @@ const tasks: {
       priority: "High",
       due: "2024-02-15",
       assignee: "Sarah Wilson",
+      status: "todo",
     },
   ],
 
@@ -43,6 +46,7 @@ const tasks: {
       due: "2024-02-15",
       assignee: "Sarah Wilson",
       progress: 75,
+      status: "inProgress",
     },
     {
       id: "3",
@@ -53,6 +57,7 @@ const tasks: {
       due: "2024-02-15",
       assignee: "Sarah Wilson",
       progress: 75,
+      status: "inProgress",
     },
   ],
 
@@ -66,6 +71,7 @@ const tasks: {
       priority: "Low",
       due: "NA",
       assignee: "Robert Chen",
+      status: "done",
     },
   ],
 };
@@ -77,27 +83,91 @@ const priorityStyles: Record<TaskPriority, string> = {
 };
 
 export default function TaskBoard() {
-    const [openDailyLogModel, setDailyLogModel] = useState(false);
-    const [openNewTaskModel, setNewTaskModel] = useState(false);
-  
+  const [openDailyLogModel, setDailyLogModel] = useState(false);
+  const [openNewTaskModel, setNewTaskModel] = useState(false);
+  const [tasks, setTasks] = useState(initialTasks);
+
+  const handleNewTask = (data: any) => {
+    const newTask: Task = {
+      id: Date.now().toString(), // simple unique id
+      title: data.taskName,
+      project: data.project,
+      description: data.description,
+      priority: capitalizeFirstLetter(data.priority) as TaskPriority,
+      due: data.deadline || "NA",
+      assignee: data.assignedTo,
+      status: data.status, // todo / inProgress / done
+    };
+
+    setTasks((prev) => {
+      const updated = { ...prev };
+      if (newTask.status === "todo") updated.todo = [newTask, ...prev.todo];
+      else if (newTask.status === "inProgress")
+        updated.inProgress = [newTask, ...prev.inProgress];
+      else if (newTask.status === "done")
+        updated.done = [newTask, ...prev.done];
+      return updated;
+    });
+  };
+const handleDailyLogSubmit = (log: any) => {
+  setTasks((prev) => {
+    const updated = { ...prev };
+
+    const updateTask = (list: Task[]) =>
+      list.map((task) =>
+        task.title === log.task && task.project === log.project
+          ? {
+              ...task,
+              description: log.description,
+              progress: Number(log.progress),
+              status:
+                Number(log.progress) === 100
+                  ? "done"
+                  : task.status,
+            }
+          : task
+      );
+
+    updated.todo = updateTask(prev.todo);
+    updated.inProgress = updateTask(prev.inProgress);
+    updated.done = updateTask(prev.done);
+
+    return updated;
+  });
+};
+
   return (
-    <div className="bg-white rounded-[8px] lg:p-6 p-3 border border-[#F3F4F6]
-      shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.1),_0px_4px_6px_-1px_rgba(0,0,0,0.1)]">
+    <div
+      className="bg-white rounded-[8px] lg:p-6 p-3 border border-[#F3F4F6]
+      shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.1),_0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
+    >
       <div className="flex sm:flex-row flex-col gap-3 sm:justify-between sm:items-center mb-6">
         <h2 className="text-[17px] font-semibold">Task Board</h2>
         <div className="flex gap-4">
-          <button onClick={() => setDailyLogModel(true)} className="bg-[#3AB449] text-white px-6 py-2 rounded-[8px] text-[16px] font-normal">
+          <button
+            onClick={() => setDailyLogModel(true)}
+            className="bg-[#3AB449] text-white px-6 py-2 rounded-[8px] text-[16px] font-normal"
+          >
             Daily Work Log
           </button>
-          <button onClick={() => setNewTaskModel(true)} className="bg-[#2563EB] text-white px-6 py-2 rounded-[8px] text-[16px] font-normal">
+          <button
+            onClick={() => setNewTaskModel(true)}
+            className="bg-[#2563EB] text-white px-6 py-2 rounded-[8px] text-[16px] font-normal"
+          >
             Add Task
           </button>
+          
           <DailyLogModel
             open={openDailyLogModel}
             onClose={() => setDailyLogModel(false)}
+            onSubmit={(data) => {
+                handleDailyLogSubmit(data);
+            }}
           />
+
           <NewTaskModel
             open={openNewTaskModel}
+            onSubmit={handleNewTask}
             onClose={() => setNewTaskModel(false)}
           />
         </div>
@@ -125,22 +195,28 @@ export default function TaskBoard() {
   );
 }
 
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function renderTask(task: Task) {
   return (
     <div key={task.id} className="bg-white rounded-xl p-4 shadow-sm mb-4">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-bold text-[14px] text-[#111827]">{task.title}</h3>
-        {
-          task.due !== "NA" ?
+        {task.due !== "NA" ? (
           <span
-            className={`px-3 py-1 rounded-full text-sm ${priorityStyles[task.priority]}`}
+            className={`px-3 py-1 rounded-full text-sm ${
+              priorityStyles[task.priority]
+            }`}
           >
             {task.priority}
-          </span> :
+          </span>
+        ) : (
           <>
             <RightCheckIcon />
           </>
-        }
+        )}
       </div>
 
       <p className="text-[#6B7280] text-xs mb-2">{task.project}</p>
@@ -182,7 +258,9 @@ function Column({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`${bg} rounded-[8px] p-4 min-h-[600px]`}>
+    <div
+      className={`${bg} rounded-[8px] p-4 min-h-[600px] max-h-[80vh] overflow-auto scroll-hide`}
+    >
       <h3 className="font-semibold mb-4 text-sm text-[#111827]">{title}</h3>
       {children}
     </div>

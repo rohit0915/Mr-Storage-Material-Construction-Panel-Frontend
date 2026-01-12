@@ -33,7 +33,7 @@ export default function AllProjectsTable({ projects }: Props) {
     "overview"
   );
   const navigate = useNavigate();
-    const today = new Date();
+  const today = new Date();
 
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -201,11 +201,19 @@ export default function AllProjectsTable({ projects }: Props) {
                     <td className="lg:px-6 px-3 lg:py-6 py-3">
                       <div className="flex gap-4 text-[#2563EB]">
                         <button
-                          onClick={() => navigate("/project-view-page")}
+                          onClick={() =>
+                            navigate("/project-view-page", {
+                              state: {
+                                projectCode: project.code,
+                                projectName: project.name,
+                              },
+                            })
+                          }
                           className="hover:opacity-70"
                         >
                           <img src={EyeIcon} alt="" className="w-fit" />
                         </button>
+
                         <button className="hover:opacity-70">
                           <img src={EditIcon} alt="" className="w-fit" />
                         </button>
@@ -261,26 +269,27 @@ export default function AllProjectsTable({ projects }: Props) {
             </div>
 
             <div className="lg:p-6 p-3">
-        <div className="grid grid-cols-7 text-center text-[13px] text-gray-500 mb-12">
-          {weekDays.map((d) => (
-            <div key={d}>{d}</div>
-          ))}
-        </div>
+              <div className="grid grid-cols-7 text-center text-[13px] text-gray-500 mb-12">
+                {weekDays.map((d) => (
+                  <div key={d}>{d}</div>
+                ))}
+              </div>
 
-        <div className="grid grid-cols-7 gap-3 text-[14px]">
-          {Array.from({ length: firstDayIndex }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
+              <div className="grid grid-cols-7 gap-3 text-[14px]">
+                {Array.from({ length: firstDayIndex }).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
 
-          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
-            const isSelected = day === selectedDate;
-            const hasEvent = hasEventDays.includes(day);
+                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(
+                  (day) => {
+                    const isSelected = day === selectedDate;
+                    const hasEvent = hasEventDays.includes(day);
 
-            return (
-              <button
-                key={day}
-                onClick={() => setSelectedDate(day)}
-                className={`h-[44px] rounded-[8px] flex items-center justify-center relative
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => setSelectedDate(day)}
+                        className={`h-[44px] rounded-[8px] flex items-center justify-center relative
                   ${
                     isSelected
                       ? "bg-blue-600 text-white"
@@ -288,17 +297,18 @@ export default function AllProjectsTable({ projects }: Props) {
                       ? "bg-red-50 text-red-500"
                       : "text-gray-700"
                   }`}
-              >
-                {day}
+                      >
+                        {day}
 
-                {hasEvent && !isSelected && (
-                  <span className="absolute right-2 top-2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        {hasEvent && !isSelected && (
+                          <span className="absolute right-2 top-2 w-1.5 h-1.5 bg-red-500 rounded-full" />
+                        )}
+                      </button>
+                    );
+                  }
                 )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">

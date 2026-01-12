@@ -1,3 +1,4 @@
+import { useState } from "react";
 import StatsOverview from "../components/cards/StatCard";
 import UsedDeliveryGraph from "../components/cards/UsedDeliveryGraph";
 import PlannedVsActualChart from "../components/charts/PlannedVsActualChart";
@@ -6,7 +7,6 @@ import SafetyCompliance from "../components/tables/SafetyCompliance";
 import RecentProjects from "../components/projects/RecentProjects";
 import UrgentTasks from "../components/tasks/UrgentTasks";
 import ExportIcon  from "../assets/exportIcon.svg";
-import ProjectFilters from "../components/projects/ProjectFilters";
 import DelayComaprisonGraph from "../components/cards/DelayComaprisonGraph";
 import DelayProgress from "../components/tables/DelayProgress";
 import InfoIcon from "../assets/InfoIcon.svg";
@@ -15,37 +15,41 @@ import FolderIcon from "../assets/activeproject.svg";
 import MoneyIcon from "../assets/completionicon.svg";
 import BoxIcon from "../assets/pendingmaterialicon.svg";
 import ShieldIcon from "../assets/safetyscoreicon.svg";
+import FilterTabs from "../components/common/FilterTabs";
+import type { Dayjs } from "dayjs";
+import { useSidebar } from "../context/SidebarContext";
 
-const stats: StatItem[] = [
-  {
-    key: "activeProjects",
-    title: "Active Projects",
-    value: 12,
-    icon: FolderIcon,
-  },
-  {
-    key: "completionRate",
-    title: "Completion Rate",
-    value: "78%",
-    icon: MoneyIcon,
-  },
-  {
-    key: "pendingMaterials",
-    title: "Pending Materials",
-    value: 8, 
-    icon: BoxIcon,
-  },
-  {
-    key: "safetyScore",
-    title: "Safety Score",
-    value: "95%",
-    icon: ShieldIcon,
-  },
-];
+type StatsTab = "today" | "week" | "month";
 
 export default function Dashboard() {
+const {activeDate:activeTab} = useSidebar();
+  const stats: Record<StatsTab, StatItem[]> = {
+  today: [
+    { key: "activeProjects", title: "Active Projects", value: 2, icon: FolderIcon },
+    { key: "completionRate", title: "Completion Rate", value: "65%", icon: MoneyIcon },
+    { key: "pendingMaterials", title: "Pending Materials", value: 3, icon: BoxIcon },
+    { key: "safetyScore", title: "Safety Score", value: "92%", icon: ShieldIcon },
+  ],
+  week: [
+    { key: "activeProjects", title: "Active Projects", value: 8, icon: FolderIcon },
+    { key: "completionRate", title: "Completion Rate", value: "72%", icon: MoneyIcon },
+    { key: "pendingMaterials", title: "Pending Materials", value: 6, icon: BoxIcon },
+    { key: "safetyScore", title: "Safety Score", value: "94%", icon: ShieldIcon },
+  ],
+  month: [
+    { key: "activeProjects", title: "Active Projects", value: 12, icon: FolderIcon },
+    { key: "completionRate", title: "Completion Rate", value: "78%", icon: MoneyIcon },
+    { key: "pendingMaterials", title: "Pending Materials", value: 8, icon: BoxIcon },
+    { key: "safetyScore", title: "Safety Score", value: "95%", icon: ShieldIcon },
+  ],
+};
+ const [project, setProject] = useState("all");
+  const [manager, setManager] = useState("all");
+  const [startDate, setStartDate] = useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null>(null);
   return (
-    <div className="space-y-6">
+    <div className=" mt-10 space-y-6 relative">
+      <FilterTabs  />
       <div>
         <div className="flex sm:flex-row flex-col sm:items-center justify-between mb-8 gap-4">
           <div>
@@ -59,32 +63,30 @@ export default function Dashboard() {
           </div>
         </div>
         <StatsOverview
-          stats={stats}
+          stats={stats[activeTab as StatsTab ]}
           showActions
         />
       </div>
 
-      <ProjectFilters />
-
-      <RecentProjects />
+      <RecentProjects project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
 
       <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-        <UrgentTasks />
-        <PlannedVsActualChart />
+        <UrgentTasks project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
+        <PlannedVsActualChart project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
       </div>
 
       <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-        <UsedDeliveryGraph />
-        <DelayComaprisonGraph />
+        <UsedDeliveryGraph project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
+        <DelayComaprisonGraph project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
       </div>
 
       <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-        <SafetyCompliance />
-        <DelayProgress />
+        <SafetyCompliance project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
+        <DelayProgress project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
       </div>
 
       <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
-        <ResourceUtilizationDistribution />
+        <ResourceUtilizationDistribution project={project}  setProject={setProject} manager={manager} setManager={setManager} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate}/>
       </div>
 
       <div className="w-full rounded-[8px] border border-[#BFDBFE] bg-[#EFF6FF] px-5 py-4 flex items-center gap-3">

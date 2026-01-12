@@ -9,6 +9,7 @@ import ReportIcon from "../../assets/reporticon.svg";
 import SidenavigationIcon from "../../assets/sidenavigation.svg";
 import LeftArrowIcon from "../../assets/left-arrow.svg";
 import RightArrowIcon from "../../assets/right-arrow.svg";
+import { useSidebar } from "../../context/SidebarContext";
 
 type SidebarTab = {
   key: string;
@@ -82,7 +83,7 @@ type Props = {
 export default function Sidebar({ open, setOpen }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { activeDate } = useSidebar();
   const activeTab =
     SIDEBAR_TABS.find((tab) => {
 
@@ -103,6 +104,9 @@ export default function Sidebar({ open, setOpen }: Props) {
 
       return location.pathname.startsWith(tab.path);
     })?.key || "/";
+
+
+ 
 
   return (
     <>
@@ -169,8 +173,8 @@ export default function Sidebar({ open, setOpen }: Props) {
           </div>
 
           <div className="flex gap-2 items-center mb-6">
-            <div className="bg-[#D8DEEA] h-8 flex justify-center cursor-pointer items-center text-[12px] text-[#272C42] px-5 py-2 min-w-[100px]">
-              Today
+            <div className="bg-[#D8DEEA] h-8 flex justify-center cursor-pointer items-center text-[16px] font-medium capitalize text-[#272C42] px-5 py-2 min-w-[100px]">
+              {activeDate}
             </div>
 
             <div className="w-[60px] flex gap-2 items-center">

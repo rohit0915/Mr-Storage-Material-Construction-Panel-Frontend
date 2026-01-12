@@ -7,15 +7,6 @@ import RedAlertIcon from "../assets/redalerticon.svg";
 import ReminderIcon from "../assets/remindericon.svg";
 import NotificationBellIcon from "../assets/NotificationCardIcon";
 
-const filters = [
-  { label: "All", value: "all" },
-  { label: "Unread", value: "unread", count: 3 },
-  { label: "Leads", value: "leads", count: 2 },
-  { label: "Tasks", value: "tasks", count: 2 },
-  { label: "Meetings", value: "meetings", count: 2 },
-  { label: "Escalations", value: "escalations", count: 1 },
-];
-
 const notifications = [
   {
     id: 1,
@@ -26,6 +17,7 @@ const notifications = [
     type: "Meeting",
     iconBg: "bg-blue-100",
     icon: AssignedIcon,
+    read: false,
   },
   {
     id: 2,
@@ -36,6 +28,7 @@ const notifications = [
     type: "Lead",
     iconBg: "bg-yellow-100",
     icon: ReminderIcon,
+    read: false,
   },
   {
     id: 3,
@@ -46,6 +39,7 @@ const notifications = [
     type: "Task",
     iconBg: "bg-red-100",
     icon: RedAlertIcon,
+    read: false,
   },
   {
     id: 4,
@@ -56,6 +50,7 @@ const notifications = [
     type: "Meeting",
     iconBg: "bg-blue-100",
     icon: MeetingIcon,
+    read: false,
   },
 ];
 
@@ -100,9 +95,39 @@ export default function Notifications() {
     if (active === "leads") return item.type.toLowerCase() === "lead";
     if (active === "tasks") return item.type.toLowerCase() === "task";
     if (active === "meetings") return item.type.toLowerCase() === "meeting";
-    if (active === "escalations") return item.type.toLowerCase().includes("escalation");
+    if (active === "escalations")
+      return item.type.toLowerCase().includes("escalation");
     return true;
   });
+
+  const notificationCounts = {
+    all: notifications.length,
+    unread: notifications.filter((n) => n.read).length,
+    leads: notifications.filter((n) => n.type.toLowerCase() === "lead").length,
+    tasks: notifications.filter((n) => n.type.toLowerCase() === "task").length,
+    meetings: notifications.filter((n) => n.type.toLowerCase() === "meeting")
+      .length,
+    escalations: notifications.filter((n) =>
+      n.type.toLowerCase().includes("escalation")
+    ).length,
+  };
+
+  const filters = [
+    { label: "All", value: "all", count: notificationCounts.all },
+    { label: "Unread", value: "unread", count: notificationCounts.unread },
+    { label: "Leads", value: "leads", count: notificationCounts.leads },
+    { label: "Tasks", value: "tasks", count: notificationCounts.tasks },
+    {
+      label: "Meetings",
+      value: "meetings",
+      count: notificationCounts.meetings,
+    },
+    {
+      label: "Escalations",
+      value: "escalations",
+      count: notificationCounts.escalations,
+    },
+  ];
 
   return (
     <div className="space-y-6">

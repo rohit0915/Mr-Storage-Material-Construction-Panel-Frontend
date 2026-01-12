@@ -23,87 +23,28 @@ const stats: StatItem[] = [
     title: "Pending",
     value: 1,
     icon: FolderIcon,
-    bg: "#EAB308"
+    bg: "#EAB308",
   },
   {
     key: "completionRate",
     title: "Approved",
     value: 1,
     iconsvg: <RightCheckIcon color="#9333EA" />,
-    bg: "#9333EA"
+    bg: "#9333EA",
   },
   {
     key: "pendingMaterials",
     title: "Dispatched",
     value: 1,
     icon: BoxIcon,
-    bg: "#1D51A4"
+    bg: "#1D51A4",
   },
   {
     key: "safetyScore",
     title: "Delivered",
     value: 1,
     iconsvg: <ShieldCheckIcon color="#3AB449" />,
-    bg: "#3AB449"
-  },
-];
-
-const requests = [
-  {
-    id: "1",
-    requestNo: "MR-001",
-    requestedBy: "John Smith",
-    projectName: "Downtown Office Complex",
-    projectCode: "PRJ-001",
-    material: "Steel Beams",
-    quantity: "50 units",
-    spec: "Grade A steel required",
-    needBy: "2025-02-02",
-    delivery: "2025-02-18",
-    status: "Approved",
-    supplier: "Steel Corp Ltd",
-  },
-  {
-    id: "2",
-    requestNo: "MR-002",
-    requestedBy: "Sarah Wilson",
-    projectName: "Residential Tower A",
-    projectCode: "PRJ-002",
-    material: "Concrete Mix",
-    quantity: "200 cubic meters",
-    spec: "High strength concrete",
-    needBy: "2025-02-15",
-    delivery: "2025-02-14",
-    status: "Dispatched",
-    supplier: "Concrete Solutions",
-  },
-  {
-    id: "3",
-    requestNo: "MR-003",
-    requestedBy: "Mike Johnson",
-    projectName: "Downtown Office Complex",
-    projectCode: "PRJ-001",
-    material: "Electrical Cables",
-    quantity: "500 units",
-    spec: "Fire-resistant cable",
-    needBy: "2025-02-25",
-    delivery: "TBD",
-    status: "Pending",
-    supplier: "Electro Tech",
-  },
-  {
-    id: "4",
-    requestNo: "MR-004",
-    requestedBy: "Tom Brown",
-    projectName: "Residential Tower A",
-    projectCode: "PRJ-002",
-    material: "Ceramic Tiles",
-    quantity: "1000 sq ft",
-    spec: "Premium quality tiles",
-    needBy: "2025-03-01",
-    delivery: "2025-02-10",
-    status: "Delivered",
-    supplier: "Tile Masters",
+    bg: "#3AB449",
   },
 ];
 
@@ -123,6 +64,64 @@ const options = [
 ];
 
 export default function Materials() {
+  const [requests, setRequests] = useState([
+    {
+      id: "1",
+      requestNo: "MR-001",
+      requestedBy: "John Smith",
+      projectName: "Downtown Office Complex",
+      projectCode: "PRJ-001",
+      material: "Steel Beams",
+      quantity: "50 units",
+      spec: "Grade A steel required",
+      needBy: "2025-02-02",
+      delivery: "2025-02-18",
+      status: "Approved",
+      supplier: "Steel Corp Ltd",
+    },
+    {
+      id: "2",
+      requestNo: "MR-002",
+      requestedBy: "Sarah Wilson",
+      projectName: "Residential Tower A",
+      projectCode: "PRJ-002",
+      material: "Concrete Mix",
+      quantity: "200 cubic meters",
+      spec: "High strength concrete",
+      needBy: "2025-02-15",
+      delivery: "2025-02-14",
+      status: "Dispatched",
+      supplier: "Concrete Solutions",
+    },
+    {
+      id: "3",
+      requestNo: "MR-003",
+      requestedBy: "Mike Johnson",
+      projectName: "Downtown Office Complex",
+      projectCode: "PRJ-001",
+      material: "Electrical Cables",
+      quantity: "500 units",
+      spec: "Fire-resistant cable",
+      needBy: "2025-02-25",
+      delivery: "TBD",
+      status: "Pending",
+      supplier: "Electro Tech",
+    },
+    {
+      id: "4",
+      requestNo: "MR-004",
+      requestedBy: "Tom Brown",
+      projectName: "Residential Tower A",
+      projectCode: "PRJ-002",
+      material: "Ceramic Tiles",
+      quantity: "1000 sq ft",
+      spec: "Premium quality tiles",
+      needBy: "2025-03-01",
+      delivery: "2025-02-10",
+      status: "Delivered",
+      supplier: "Tile Masters",
+    },
+  ]);
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
   const [openReportModel, setReportModel] = useState(false);
@@ -131,6 +130,11 @@ export default function Materials() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(
     null
   );
+
+  const filteredRequests = requests.filter((r) => {
+    if (status === "all") return true;
+    return r.status.toLowerCase() === status;
+  });
 
   return (
     <div className="space-y-6">
@@ -174,6 +178,9 @@ export default function Materials() {
             <RequestMaterialModel
               open={openRequestModel}
               onClose={() => setRequestModel(false)}
+              onCreate={(newRequest) =>
+                setRequests((prev) => [newRequest, ...prev])
+              }
             />
           </div>
         </div>
@@ -184,31 +191,49 @@ export default function Materials() {
             <table className="min-w-[900px] w-full border-collapse rounded-[8px]">
               <thead>
                 <tr className="text-[12px] uppercase text-[#6B7280] bg-[#F9FAFB] border-b">
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Request</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Project</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Material</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Timeline</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Status</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Supplier</th>
-                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">Actions</th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Request
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Project
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Material
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Timeline
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Status
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Supplier
+                  </th>
+                  <th className="lg:px-6 px-3 lg:py-4 py-3 font-normal text-start">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
-                {requests.map((r) => (
+                {filteredRequests.map((r) => (
                   <tr
                     key={r.id}
                     className="border-b last:border-b-0 even:bg-[#F9FAFB]"
                   >
                     <td className="lg:px-6 px-3 lg:py-6 py-3">
-                      <p className="text-[13px] text-[#111827]">{r.requestNo}</p>
+                      <p className="text-[13px] text-[#111827]">
+                        {r.requestNo}
+                      </p>
                       <p className="text-xs text-[#6B7280] mt-1">
                         by {r.requestedBy}
                       </p>
                     </td>
 
                     <td className="lg:px-6 px-3 lg:py-6 py-3">
-                      <p className="text-[13px] text-[#111827]">{r.projectName}</p>
+                      <p className="text-[13px] text-[#111827]">
+                        {r.projectName}
+                      </p>
                       <p className="text-xs text-[#6B7280] mt-1">
                         {r.projectCode}
                       </p>

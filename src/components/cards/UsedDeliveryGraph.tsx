@@ -1,6 +1,38 @@
 import ReactECharts from "echarts-for-react";
+import { useMemo } from "react";
 
-export default function MaterialUsageVsDelivery() {
+export default function MaterialUsageVsDelivery({project,manager,startDate,endDate}:any) {
+    const chartData = useMemo(() => {
+    const materials = [
+      "Concrete",
+      "Steel",
+      "Lumber",
+      "Brick",
+      "Glass",
+      "Insulation",
+    ];
+
+    const requested: number[] = [];
+    const delivered: number[] = [];
+
+    materials.forEach(() => {
+      const req = Math.floor(Math.random() * 30) + 20;
+      const del = Math.max(
+        0,
+        req - Math.floor(Math.random() * 5)
+      );
+
+      requested.push(req);
+      delivered.push(del);
+    });
+
+    return {
+      materials,
+      requested,
+      delivered,
+    };
+  }, [project, manager, startDate, endDate]);
+
   const option = {
     tooltip: {
       trigger: "axis",
@@ -41,14 +73,7 @@ export default function MaterialUsageVsDelivery() {
 
     xAxis: {
       type: "category",
-      data: [
-        "Concrete",
-        "Steel",
-        "Lumber",
-        "Brick",
-        "Glass",
-        "Insulation",
-      ],
+      data: chartData.materials,
       axisTick: { show: false },
       axisLine: { show: false },
       axisLabel: {
@@ -83,7 +108,7 @@ export default function MaterialUsageVsDelivery() {
           color: "#E3B341",
           borderRadius: [4, 4, 0, 0],
         },
-        data: [45, 28, 18, 32, 10, 15],
+        data: chartData.requested,
       },
       {
         name: "Delivered",
@@ -93,7 +118,7 @@ export default function MaterialUsageVsDelivery() {
           color: "#6B7280",
           borderRadius: [4, 4, 0, 0],
         },
-        data: [42, 27, 16, 31, 9, 14],
+        data: chartData.delivered,
       },
     ],
   };

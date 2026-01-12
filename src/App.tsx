@@ -1,6 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { Toaster } from "react-hot-toast";
+import { SidebarProvider } from "./context/SidebarContext";
 
 function App() {
   return (
@@ -11,7 +12,9 @@ function App() {
           duration: 3000,
         }}
       />
+      <SidebarProvider>
       <AppRoutes />
+      </SidebarProvider>
     </BrowserRouter>
   );
 }

@@ -1,6 +1,24 @@
+import { useMemo } from "react";
 import ReactECharts from "echarts-for-react";
 
-export default function DelayVsProgressComparison() {
+export default function DelayVsProgressComparison({
+  project,
+  manager,
+  startDate,
+  endDate,
+}: any) {
+  const delayData = useMemo(() => {
+    return Array.from({ length: 6 }, () =>
+      Math.floor(Math.random() * 13)
+    );
+  }, [project, manager, startDate, endDate]);
+
+  const progressData = useMemo(() => {
+    return Array.from({ length: 6 }, () =>
+      Math.floor(Math.random() * 50) + 50
+    );
+  }, [project, manager, startDate, endDate]);
+
   const option = {
     tooltip: {
       trigger: "axis",
@@ -100,7 +118,7 @@ export default function DelayVsProgressComparison() {
           color: "#EF4444",
           borderRadius: [6, 6, 0, 0],
         },
-        data: [2, 8, 5, 1, 12, 0],
+        data: delayData,
       },
       {
         name: "Progress (%)",
@@ -115,7 +133,7 @@ export default function DelayVsProgressComparison() {
         itemStyle: {
           color: "#3B82F6",
         },
-        data: [85, 65, 75, 90, 50, 88],
+        data: progressData,
       },
     ],
   };
@@ -131,14 +149,12 @@ export default function DelayVsProgressComparison() {
         </h3>
       </div>
 
-      <div className="">
-        <ReactECharts
-          option={option}
-          style={{ height: 420 }}
-          notMerge
-          lazyUpdate
-        />
-      </div>
+      <ReactECharts
+        option={option}
+        style={{ height: 420 }}
+        notMerge
+        lazyUpdate
+      />
     </div>
   );
 }
