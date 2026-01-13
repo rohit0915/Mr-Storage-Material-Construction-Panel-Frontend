@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BellIcon from "../../assets/bellicon.svg";
 import SearchIcon from "../../assets/searchIcon.svg";
 import Logo from "../../assets/logo.svg";
+import { useSearch } from "../../context/SearchContext";
 
 type Props = {
   count?: number;
   onToggleSidebar: () => void;
 };
 
+const hideSearchOnRoutes = ["/notifications", "/communication"];
+
 export default function Header({ count, onToggleSidebar }: Props) {
   const displayCount = typeof count === "number" && count > 99 ? "99+" : count;
-  const [search, setSearch] = useState("");
+  const { search, setSearch } = useSearch();
+  const location = useLocation();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -47,16 +51,18 @@ export default function Header({ count, onToggleSidebar }: Props) {
             <span className="block w-5 h-[3px] bg-black"></span>
           </div>
         </button>
-        <div className="flex gap-2 items-center px-2 border border-[#D1D5DB] rounded-[8px] h-[38px]">
-          <img src={SearchIcon} alt="" />
-          <input
-            type="text"
-            placeholder="Search leads, projects..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="text-[14px] outline-none lg:min-w-[256px] sm:w-[130px] w-[80px]"
-          />
-        </div>
+        {!hideSearchOnRoutes.includes(location.pathname) && (
+          <div className="flex gap-2 items-center px-2 border border-[#D1D5DB] rounded-[8px] h-[38px]">
+            <img src={SearchIcon} alt="" />
+            <input
+  type="text"
+  placeholder="Search leads, projects..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  className="text-[14px] outline-none lg:min-w-[256px] sm:w-[130px] w-[80px]"
+/>
+          </div>
+        )}
       </div>
 
       <div className="flex lg:gap-12 gap-3 items-center">

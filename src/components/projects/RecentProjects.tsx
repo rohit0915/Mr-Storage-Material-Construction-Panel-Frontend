@@ -12,6 +12,7 @@ dayjs.extend(customParseFormat);
 import CustomSelect from "../common/CustomSelect";
 import { useNavigate } from "react-router-dom";
 import { useSidebar } from "../../context/SidebarContext";
+import { useSearch } from "../../context/SearchContext";
 
 const projectFilterOptions = [
   { label: "All Projects", value: "all" },
@@ -64,30 +65,54 @@ const projects = [
 
 export default function RecentProjects({setManager,setProject,setStartDate,setEndDate,startDate,endDate,project,manager}:any) {
   const {activeDate} = useSidebar();
-  
+  const {search} = useSearch();
   const navigate = useNavigate();
-  const getFilteredProjects = () => {
-    const today = dayjs();
-    return projects.filter((p) => {
-      const projectDate = dayjs(p.projectDate, "DD/MM/YYYY");
-      const daysDifference = today.diff(projectDate, 'day');
-      
-      // Apply tab-based filtering
-      let tabFilter = true;
-      if (activeDate === "today") {
-        tabFilter = today.isSame(projectDate, 'day');
-      } else if (activeDate === "week") {
-        tabFilter = daysDifference <= 7;
-      } else if (activeDate === "month") {
-        tabFilter = daysDifference <= 30;
-      }
-      const matchProject = project === "all" || p.code === project || p.name === project;
-      const matchManager = manager === "all" || p.manager === manager;
-      const matchStartDate = !startDate || projectDate.isSameOrAfter(startDate, "day");
-      const matchEndDate = !endDate || projectDate.isSameOrBefore(endDate, "day");
-      return tabFilter && matchProject && matchManager && matchStartDate && matchEndDate;
-    });
-  };
+const getFilteredProjects = () => {
+  const today = dayjs();
+
+  return projects.filter((p) => {
+    const projectDate = dayjs(p.projectDate, "DD/MM/YYYY");
+    const daysDifference = today.diff(projectDate, "day");
+
+    let tabFilter = true;
+    if (activeDate === "today") {
+      tabFilter = today.isSame(projectDate, "day");
+    } else if (activeDate === "week") {
+      tabFilter = daysDifference <= 7;
+    } else if (activeDate === "month") {
+      tabFilter = daysDifference <= 30;
+    }
+
+    const matchProject =
+      project === "all" || p.code === project || p.name === project;
+
+    const matchManager =
+      manager === "all" || p.manager === manager;
+
+    const matchStartDate =
+      !startDate || projectDate.isSameOrAfter(startDate, "day");
+
+    const matchEndDate =
+      !endDate || projectDate.isSameOrBefore(endDate, "day");
+
+    const matchSearch = search
+      ? `${p.name} ${p.code} ${p.manager}`
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      : true;
+
+    return (
+      tabFilter &&
+      matchProject &&
+      matchManager &&
+      matchStartDate &&
+      matchEndDate &&
+      matchSearch
+    );
+  });
+};
+
+  
 
   const filteredProjects = getFilteredProjects();
 

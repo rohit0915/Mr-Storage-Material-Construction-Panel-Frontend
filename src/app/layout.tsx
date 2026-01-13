@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/sidebar/Sidebar";
 import Header from "../components/header/Header";
+import { SearchProvider } from "../context/SearchContext";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {!isAuthPage && (
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       )}
-
+<SearchProvider>
       <div className="flex flex-1 flex-col">
         {!isAuthPage && (
           <Header onToggleSidebar={() => setSidebarOpen((p) => !p)} />
@@ -27,6 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </main>
       </div>
+      </SearchProvider>
     </div>
   );
 }

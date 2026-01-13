@@ -8,7 +8,6 @@ import BoxIcon from "../assets/resourcicon.svg";
 import ClockIcon from "../assets/ClockIcon";
 import ShieldCheckIcon from "../assets/SieldIcon";
 
-/* ---------------- STATS ---------------- */
 const stats: StatItem[] = [
   {
     key: "activeProjects",
@@ -47,6 +46,7 @@ const rows = [
     actual: 65,
     planned: 70,
     status: "On Track",
+    createdDate: "2026-01-13",
   },
   {
     id: 2,
@@ -54,6 +54,7 @@ const rows = [
     actual: 35,
     planned: 40,
     status: "Delayed",
+    createdDate: "2025-12-20",
   },
   {
     id: 3,
@@ -61,6 +62,7 @@ const rows = [
     actual: 0,
     planned: 0,
     status: "Not Started",
+    createdDate: "2026-01-01",
   },
   {
     id: 4,
@@ -68,6 +70,7 @@ const rows = [
     actual: 100,
     planned: 100,
     status: "Completed",
+    createdDate: "2025-11-20",
   },
 ];
 
@@ -159,7 +162,6 @@ const reports = [
   },
 ];
 
-/* ---------------- FILTER HELPERS ---------------- */
 const projectNameMap: Record<string, string> = {
   "PRJ-001": "Downtown Office Complex",
   "PRJ-002": "Residential Tower A",
@@ -172,8 +174,7 @@ const isWithinTimeFilter = (date: string, time: string) => {
 
   const d = new Date(date);
   const now = new Date();
-  const diff =
-    (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+  const diff = (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
 
   switch (time) {
     case "this_week":
@@ -191,16 +192,20 @@ const isWithinTimeFilter = (date: string, time: string) => {
   }
 };
 
-/* ---------------- COMPONENT ---------------- */
 export default function Reports() {
   const [time, setTime] = useState("all");
   const [projectName, setProjectName] = useState("all");
 
-  const filteredRows = rows.filter((row) =>
-    projectName === "all"
-      ? true
-      : row.project === projectNameMap[projectName]
-  );
+  const filteredRows = rows.filter((row) => {
+    const projectMatch =
+      projectName === "all"
+        ? true
+        : row.project === projectNameMap[projectName];
+
+    const timeMatch = isWithinTimeFilter(row.createdDate, time);
+
+    return projectMatch && timeMatch;
+  });
 
   const filteredReports = reports.filter(
     (r) =>
@@ -211,7 +216,6 @@ export default function Reports() {
   const filteredMaterials =
     projectName === "all" ? materials : materials.slice(0, 2);
 
-  /* ---------------- UI (UNCHANGED) ---------------- */
   return (
     <div className="space-y-6">
       <div>
@@ -246,7 +250,6 @@ export default function Reports() {
 
         <StatsOverview stats={stats} showProgress />
 
-        {/* -------- TABLE -------- */}
         <div className="rounded-[8px] bg-white border border-[#F3F4F6] shadow overflow-hidden mt-6">
           <div className="lg:px-6 px-3 py-5 border-b">
             <h2 className="text-[20px] font-medium text-[#111827]">
@@ -289,13 +292,20 @@ export default function Reports() {
                     </td>
                     <td className="lg:px-6 px-3 lg:py-6 py-3">
                       <span
-                        className={`px-4 py-2 rounded-full text-[13px] ${statusStyles[row.status]}`}
+                        className={`px-4 py-2 rounded-full text-[13px] ${
+                          statusStyles[row.status]
+                        }`}
                       >
                         {row.status}
                       </span>
                     </td>
                   </tr>
                 ))}
+                {filteredRows.length === 0 && (
+                  <p className="text-center text-sm text-[#6B7280] py-8">
+                    No projects found
+                  </p>
+                )}
               </tbody>
             </table>
           </div>
@@ -321,6 +331,11 @@ export default function Reports() {
                 </div>
               </div>
             ))}
+            {filteredMaterials.length === 0 && (
+              <p className="text-center text-sm text-[#6B7280] py-8">
+                No materials found
+              </p>
+            )}
           </div>
 
           <div className="flex-1 rounded-[8px] lg:p-6 p-3 border bg-white">
@@ -329,7 +344,7 @@ export default function Reports() {
             </h2>
 
             {filteredReports.map((item, idx) => (
-              <div key={idx} className="flex justify-between mb-6">
+              <div key={idx} className="flex justify-between mb-6 last:mb-0">
                 <div>
                   <p className="text-[13px] font-semibold">{item.title}</p>
                   <p className="text-[12px] text-[#6B7280]">
@@ -338,7 +353,9 @@ export default function Reports() {
                 </div>
                 <div className="text-right">
                   <span
-                    className={`px-4 py-1 rounded-full text-[13px] ${statusStyles[item.status]}`}
+                    className={`px-4 py-1 rounded-full text-[13px] ${
+                      statusStyles[item.status]
+                    }`}
                   >
                     {item.status}
                   </span>
@@ -348,6 +365,11 @@ export default function Reports() {
                 </div>
               </div>
             ))}
+            {filteredReports.length === 0 && (
+              <p className="text-center text-sm text-[#6B7280] py-8">
+                No reports found
+              </p>
+            )}
           </div>
         </div>
       </div>

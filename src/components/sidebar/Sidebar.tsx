@@ -86,7 +86,6 @@ export default function Sidebar({ open, setOpen }: Props) {
   const { activeDate } = useSidebar();
   const activeTab =
     SIDEBAR_TABS.find((tab) => {
-
       if (tab.key === "materials") {
         return (
           location.pathname.startsWith(tab.path) ||
@@ -105,8 +104,10 @@ export default function Sidebar({ open, setOpen }: Props) {
       return location.pathname.startsWith(tab.path);
     })?.key || "/";
 
+  const isParentActive = (tab: any) => location.pathname === tab.path;
 
- 
+  const isSubActive = (tab: any) =>
+    tab.subtitlepath && location.pathname === tab.subtitlepath;
 
   return (
     <>
@@ -125,15 +126,18 @@ export default function Sidebar({ open, setOpen }: Props) {
           ${open ? "translate-x-0" : "-translate-x-full"}
           lg:static lg:translate-x-0 flex lg:min-w-[258px]
         `}
-        >
+      >
         <div className="w-[67px] h-full bg-[#1D51A4] pt-[147px] flex flex-col items-end py-6">
-            <button onClick={() => setOpen(false)} className="p-2 lg:hidden absolute top-7 left-4">
-              <div className="space-y-[3px]">
-                <span className="block w-5 h-[3px] bg-white"></span>
-                <span className="block w-5 h-[3px] bg-white"></span>
-                <span className="block w-5 h-[3px] bg-white"></span>
-              </div>
-            </button>
+          <button
+            onClick={() => setOpen(false)}
+            className="p-2 lg:hidden absolute top-7 left-4"
+          >
+            <div className="space-y-[3px]">
+              <span className="block w-5 h-[3px] bg-white"></span>
+              <span className="block w-5 h-[3px] bg-white"></span>
+              <span className="block w-5 h-[3px] bg-white"></span>
+            </div>
+          </button>
           <div className="flex flex-col items-center">
             {SIDEBAR_TABS.map((tab) => {
               const isActive = activeTab === tab.key;
@@ -190,23 +194,38 @@ export default function Sidebar({ open, setOpen }: Props) {
           <div className="flex flex-col">
             {SIDEBAR_TABS.map((tab) => (
               <div key={tab.key} className="h-[74px] flex items-center">
-                {activeTab === tab.key && (
+                {(isParentActive(tab) || isSubActive(tab)) && (
                   <div className="flex flex-col gap-3 relative">
                     <p
                       onClick={() => {
                         setOpen(false);
                         navigate(tab.path);
                       }}
-
-                      className="h-[44px] cursor-pointer flex justify-center px-3 min-w-[150px] items-center text-white font-bold text-[15px] rounded-[11px]"
-                      style={{ backgroundColor: tab.bg }}
+                      className={`h-[44px] cursor-pointer flex justify-center px-3 min-w-[150px] items-center text-[15px] rounded-[11px]
+                        ${isParentActive(tab) ? "text-white font-bold" : "text-[#A855F7] bg-[#fff] font-normal"}
+                      `}
+                      style={
+                        isParentActive(tab)
+                          ? { backgroundColor: tab.bg }
+                          : undefined
+                      }
                     >
                       {tab.label}
                     </p>
+
                     {tab.subtitle && tab.subtitlepath && (
                       <div
-                        onClick={() => {navigate(tab.subtitlepath!); setOpen(false);}}
-                        className="absolute px-1 py-3 cursor-pointer bg-[#F9FAFB] rounded-[11px] text-center top-[52px] left-0 text-[#A855F7] w-full"
+                        onClick={() => {
+                          navigate(tab.subtitlepath!);
+                          setOpen(false);
+                        }}
+                        className={`absolute px-1 py-3 cursor-pointer rounded-[11px] text-center top-[52px] left-0 w-full
+                        ${
+                          isSubActive(tab)
+                            ? "bg-[#A855F7] text-white font-semibold"
+                            : "bg-[#F9FAFB] text-[#A855F7]"
+                        }
+                      `}
                       >
                         {tab.subtitle}
                       </div>

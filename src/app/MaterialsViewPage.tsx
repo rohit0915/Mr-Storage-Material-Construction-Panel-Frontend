@@ -6,13 +6,24 @@ import UploadImg from "../assets/uploadimg.png";
 import UploadCamera from "../assets/uploadcameraicon.svg";
 import RequestMaterialModel from "../components/requestMaterialModel";
 import PhotoModel from "../components/photoModel";
+type RequestedMaterial = {
+  material: string;
+  spec: string;
+};
 
 export default function MaterialsViewPage() {
   const navigate = useNavigate();
   const [openRequestModel, setRequestModel] = useState(false);
   const [openPhotoModel, setPhotoModel] = useState(false);
+  const initialPhotos = [UploadImg, UploadImg, UploadImg, UploadImg, UploadImg];
+  const [photos, setPhotos] = useState<string[]>(initialPhotos);
 
-  const photos = [UploadImg, UploadImg, UploadImg, UploadImg, UploadImg];
+const [requestedMaterials, setRequestedMaterials] = useState<RequestedMaterial[]>([
+  {
+    material: "Steel Beams",
+    spec: "Grade A steel required",
+  },
+]);
   return (
     <div className="space-y-6">
       <div>
@@ -131,19 +142,25 @@ export default function MaterialsViewPage() {
         className="rounded-[8px] lg:p-6 p-3 border !bg-white border-[#F3F4F6]
           !shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.1),_0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
       >
-        <div
-          className="
-            flex md:flex-row flex-col gap-3 md:items-center justify-between
-          "
-        >
+        <div className=" flex md:flex-row flex-col gap-3 md:items-start justify-between ">
           <div>
             <p className="text-[14px] uppercase text-[#6B7280] mb-2">
               Requested Material
             </p>
-            <p className="text-sm font-medium text-[#111827]">Steel Beams</p>
-            <p className="text-sm text-[#6B7280] mt-1">
-              Grade A steel required
-            </p>
+
+<div className="space-y-2">
+  {requestedMaterials.map((item, idx) => (
+    <div key={idx}>
+      <p className="text-sm font-medium text-[#111827]">
+        {item.material}
+      </p>
+      <p className="text-sm text-[#6B7280] mt-1">
+        {item.spec}
+      </p>
+    </div>
+  ))}
+</div>
+
           </div>
 
           <button
@@ -159,10 +176,19 @@ export default function MaterialsViewPage() {
             <img src={PlusIcon} alt="" />
             Requests Material
           </button>
-          <RequestMaterialModel
-            open={openRequestModel}
-            onClose={() => setRequestModel(false)}
-          />
+      <RequestMaterialModel
+  open={openRequestModel}
+  onClose={() => setRequestModel(false)}
+  onCreate={(data) => {
+    setRequestedMaterials((prev) => [
+      ...prev,
+      {
+        material: data.material,
+        spec: data.spec,
+      },
+    ]);
+  }}
+/>
         </div>
       </div>
       <div
@@ -175,27 +201,37 @@ export default function MaterialsViewPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {photos.map((src, idx) => (
-            <div key={idx} className="h-[150px] rounded-[8px] bg-[#F3F4F6]">
+            <div
+              key={idx}
+              className="h-[150px] rounded-[8px] bg-[#F3F4F6] overflow-hidden relative"
+            >
               <img
                 src={src}
-                alt=""
+                alt={`uploaded-${idx}`}
                 className="w-full h-full object-cover border-2 border-dashed rounded-[8px]"
               />
+
+              <button
+                onClick={() =>
+                  setPhotos((prev) => prev.filter((_, i) => i !== idx))
+                }
+                className="absolute top-2 right-2 bg-white hover:bg-red-500 text-black hover:text-white transition-all duration-300 ease-linear rounded-full p-1 px-2 shadow text-xs"
+              >
+                ✕
+              </button>
             </div>
           ))}
 
           <div
-            onClick={() => {
-              setPhotoModel(true);
-            }}
+            onClick={() => setPhotoModel(true)}
             className="
-              h-[150px]
-              rounded-lg border-2 border-dashed
-              flex flex-col items-center justify-center
-              text-center cursor-pointer
-              text-[#6B7280]
-              hover:bg-[#F9FAFB]
-            "
+      h-[150px]
+      rounded-lg border-2 border-dashed
+      flex flex-col items-center justify-center
+      text-center cursor-pointer
+      text-[#6B7280]
+      hover:bg-[#F9FAFB]
+    "
           >
             <div className="text-2xl mb-2">
               <img src={UploadCamera} alt="" />
@@ -203,10 +239,14 @@ export default function MaterialsViewPage() {
             <p className="text-sm">Click to upload photos or drag and drop</p>
             <p className="text-xs mt-1">PNG, JPG up to 10MB each</p>
           </div>
+
           <PhotoModel
             open={openPhotoModel}
-            onClose={() => {
+            onClose={() => setPhotoModel(false)}
+            onUpload={(file, preview) => {
+              setPhotos((prev) => [...prev, preview]);
               setPhotoModel(false);
+              console.log(file)
             }}
           />
         </div>

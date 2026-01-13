@@ -4,6 +4,7 @@ import EyeIcon from "../../assets/EyeIcon.svg";
 import EditIcon from "../../assets/EditIcon.svg";
 import LeftArrowIcon from "../../assets/left-arrow.svg";
 import RightArrowIcon from "../../assets/right-arrow.svg";
+import { useSearch } from "../../context/SearchContext";
 
 export type TeamMember = {
   role: string;
@@ -32,6 +33,7 @@ export default function AllProjectsTable({ projects }: Props) {
   const [activeTab, setActiveTab] = useState<"overview" | "calendar">(
     "overview"
   );
+  const {search} = useSearch();
   const navigate = useNavigate();
   const today = new Date();
 
@@ -71,6 +73,14 @@ export default function AllProjectsTable({ projects }: Props) {
     setCurrentYear(today.getFullYear());
     setSelectedDate(today.getDate());
   };
+
+  const filteredProjects = projects.filter((p) =>
+  search
+    ? `${p.name} ${p.code} ${p.client} ${p.status}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    : true
+);
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-6 mb-5 mt-11">
@@ -138,7 +148,7 @@ export default function AllProjectsTable({ projects }: Props) {
               </thead>
 
               <tbody>
-                {projects.map((project) => (
+                {filteredProjects.map((project) => (
                   <tr
                     key={project.id}
                     className="border-b border-[#E5E7EB] last:border-b-0"
@@ -214,7 +224,14 @@ export default function AllProjectsTable({ projects }: Props) {
                           <img src={EyeIcon} alt="" className="w-fit" />
                         </button>
 
-                        <button className="hover:opacity-70">
+                        <button onClick={() =>
+                            navigate("/project-view-page", {
+                              state: {
+                                projectCode: project.code,
+                                projectName: project.name,
+                              },
+                            })
+                          } className="hover:opacity-70">
                           <img src={EditIcon} alt="" className="w-fit" />
                         </button>
                       </div>
@@ -223,6 +240,11 @@ export default function AllProjectsTable({ projects }: Props) {
                 ))}
               </tbody>
             </table>
+                 {filteredProjects.length === 0 && (
+                    <p className="text-center text-sm text-[#6B7280] py-8 w-full">
+                      No projects found
+                    </p>
+                  )}
           </div>
         </div>
       )}

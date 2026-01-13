@@ -47,6 +47,7 @@ const {activeDate:activeTab} = useSidebar();
   const [manager, setManager] = useState("all");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
+  
   return (
     <div className=" mt-10 space-y-6 relative">
       <FilterTabs  />

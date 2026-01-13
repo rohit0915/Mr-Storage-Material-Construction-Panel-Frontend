@@ -166,6 +166,9 @@ export default function Materials() {
             <IssueReportingModal
               open={openReportModel}
               onClose={() => setReportModel(false)}
+              onCreate={(newRequest) =>
+                setRequests((prev) => [newRequest, ...prev])
+              }
             />
 
             <button
@@ -302,6 +305,10 @@ export default function Materials() {
           onClose={() => {
             setPhotoModel(false);
             setSelectedRequestId(null);
+          }}
+          onUpload={(file, requestId) => {
+            console.log("Uploaded file:", file);
+            console.log("Request ID:", requestId);
           }}
         />
 

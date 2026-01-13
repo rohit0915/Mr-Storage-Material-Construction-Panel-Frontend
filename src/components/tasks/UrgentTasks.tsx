@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function UrgentTasks({project}:any) {
+  const navigate = useNavigate();
   const tasks = [
     {
       title: "Foundation Inspection",
@@ -31,7 +34,7 @@ export default function UrgentTasks({project}:any) {
 const filterTask=project==="all"?tasks:tasks.filter((i)=>i.code===project )
   return (
     <div
-      className="rounded-[8px] bg-white border border-[#F3F4F6] h-full
+      className="rounded-[8px] bg-white border border-[#F3F4F6] h-full flex flex-col justify-between
       shadow-[0px_2px_4px_-2px_rgba(0,0,0,0.1),_0px_4px_6px_-1px_rgba(0,0,0,0.1)]"
     >
       <div className="lg:px-6 px-3 py-4 border-b border-[#E5E7EB]">
@@ -71,7 +74,7 @@ const filterTask=project==="all"?tasks:tasks.filter((i)=>i.code===project )
       </div>
 
       <div className="pb-4 text-center mt-auto">
-        <button className="text-[#2563EB] text-[14px]">
+        <button onClick={()=>navigate("/tasks")} className="text-[#2563EB] text-[14px]">
           View All Tasks
         </button>
       </div>

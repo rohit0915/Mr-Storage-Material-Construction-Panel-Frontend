@@ -109,32 +109,23 @@ export default function TaskBoard() {
       return updated;
     });
   };
-const handleDailyLogSubmit = (log: any) => {
-  setTasks((prev) => {
-    const updated = { ...prev };
+  const handleDailyLogSubmit = (data: any) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: data.task, // Task name
+      project: data.project, // Project
+      description: data.description, // Work description
+      progress: Number(data.progress), // % progress
+      priority: "Medium", // default
+      due: "NA", // In progress task
+      assignee: "You", // current user
+    };
 
-    const updateTask = (list: Task[]) =>
-      list.map((task) =>
-        task.title === log.task && task.project === log.project
-          ? {
-              ...task,
-              description: log.description,
-              progress: Number(log.progress),
-              status:
-                Number(log.progress) === 100
-                  ? "done"
-                  : task.status,
-            }
-          : task
-      );
-
-    updated.todo = updateTask(prev.todo);
-    updated.inProgress = updateTask(prev.inProgress);
-    updated.done = updateTask(prev.done);
-
-    return updated;
-  });
-};
+    setTasks((prev) => ({
+      ...prev,
+      inProgress: [newTask, ...prev.inProgress], // 🔥 sirf inProgress
+    }));
+  };
 
   return (
     <div
@@ -156,12 +147,12 @@ const handleDailyLogSubmit = (log: any) => {
           >
             Add Task
           </button>
-          
+
           <DailyLogModel
             open={openDailyLogModel}
             onClose={() => setDailyLogModel(false)}
             onSubmit={(data) => {
-                handleDailyLogSubmit(data);
+              handleDailyLogSubmit(data);
             }}
           />
 
@@ -204,7 +195,9 @@ function renderTask(task: Task) {
     <div key={task.id} className="bg-white rounded-xl p-4 shadow-sm mb-4">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-bold text-[14px] text-[#111827]">{task.title}</h3>
-        {task.due !== "NA" ? (
+        {task.status === "done" ? (
+          <RightCheckIcon />
+        ) : (
           <span
             className={`px-3 py-1 rounded-full text-sm ${
               priorityStyles[task.priority]
@@ -212,10 +205,6 @@ function renderTask(task: Task) {
           >
             {task.priority}
           </span>
-        ) : (
-          <>
-            <RightCheckIcon />
-          </>
         )}
       </div>
 

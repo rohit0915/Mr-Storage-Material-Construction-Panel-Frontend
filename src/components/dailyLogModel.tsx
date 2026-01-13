@@ -149,10 +149,19 @@ export default function DailyLogModel({
             <div>
               <label className="text-sm text-[#111827]">Progress (%)</label>
               <input
+                type="number"
                 value={progress}
-                onChange={(e) => setProgress(e.target.value)}
+                max={100}
+                min={0}
                 placeholder="Enter"
                 className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+
+                  if (value <= 100) {
+                    setProgress(e.target.value);
+                  }
+                }}
               />
             </div>
           </div>
@@ -178,7 +187,11 @@ export default function DailyLogModel({
                 <p className="text-sm mt-2">{file.name}</p>
               ) : (
                 <>
-                <img src={UploadCameraIcon} alt="" className="text-2xl mb-1" />
+                  <img
+                    src={UploadCameraIcon}
+                    alt=""
+                    className="text-2xl mb-1"
+                  />
                   <p className="text-sm text-[#6B7280]">
                     Click to upload photos or drag and drop
                   </p>

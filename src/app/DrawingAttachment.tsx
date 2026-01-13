@@ -6,6 +6,7 @@ import EyeIcon from "../assets/EyeIcon.svg";
 import DownloadIcon from "../assets/downloadicon.svg";
 import DrawingModel from "../components/drawingModel";
 import DrawingPreviewModal from "../components/drawingPreviewModel";
+import { useSearch } from "../context/SearchContext";
 const initialDummyProjects = [
   {
     name: "ABC Logistics Warehouse",
@@ -126,22 +127,42 @@ export default function DrawingAttachment() {
   const [openDrawingPreviewModel, setDrawingPreviewModel] = useState(false);
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+  const { search } = useSearch();
+  const [localSearch, setLocalSearch] = useState("");
   const [projects, setProjects] = useState<Project[]>(initialDummyProjects);
 
-  const filteredProjects = projects.filter((project) => {
-    if (!search.trim()) return true;
+const filteredProjects = projects
+  .map((project) => {
+    const query = `${search} ${localSearch}`.trim().toLowerCase();
 
-    const q = search.toLowerCase();
+    if (!query) return project;
 
-    return (
-      project.name.toLowerCase().includes(q) ||
-      project.code.toLowerCase().includes(q) ||
-      project.uploadedBy.toLowerCase().includes(q) ||
-      project.location.toLowerCase().includes(q) ||
-      project.updatedOn.toLowerCase().includes(q)
+    // 🔹 project level match
+    const projectMatch =
+      project.name.toLowerCase().includes(query) ||
+      project.code.toLowerCase().includes(query) ||
+      project.uploadedBy.toLowerCase().includes(query) ||
+      project.location.toLowerCase().includes(query) ||
+      project.updatedOn.toLowerCase().includes(query);
+
+    // 🔹 file level match
+    const matchedFiles = project.files.filter((file) =>
+      file.name.toLowerCase().includes(query)
     );
-  });
+
+    if (projectMatch) return project;
+
+    if (matchedFiles.length > 0) {
+      return {
+        ...project,
+        files: matchedFiles,
+      };
+    }
+
+    return null;
+  })
+  .filter(Boolean) as Project[];
+
 
   const handleUpload = ({
     file,
@@ -188,7 +209,7 @@ export default function DrawingAttachment() {
         files: [newFile],
       };
 
-      return [newProject, ...prev]; // 🔥 project upar
+      return [newProject, ...prev];
     });
   };
 
@@ -225,8 +246,8 @@ export default function DrawingAttachment() {
                 <input
                   type="text"
                   placeholder="Search leads, projects..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
                   className="text-[14px] outline-none lg:min-w-[256px] w-[150px]"
                 />
               </div>
@@ -295,7 +316,10 @@ export default function DrawingAttachment() {
                         </div>
 
                         <div>
-                          <p className="text-sm font-medium text-[#111827]" style={{wordBreak: "break-all"}}>
+                          <p
+                            className="text-sm font-medium text-[#111827]"
+                            style={{ wordBreak: "break-all" }}
+                          >
                             {file.name}
                           </p>
                           <p className="text-sm text-[#6B7280] mt-1">
