@@ -16,6 +16,7 @@ import FolderIcon from "../assets/clockicon.svg";
 import BoxIcon from "../assets/dispatchicon.svg";
 import ShieldCheckIcon from "../assets/SieldIcon";
 import RightCheckIcon from "../assets/RightTickIcon";
+import { useSearch } from "../context/SearchContext";
 
 const stats: StatItem[] = [
   {
@@ -122,6 +123,7 @@ export default function Materials() {
       supplier: "Tile Masters",
     },
   ]);
+  const { search } = useSearch();
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
   const [openReportModel, setReportModel] = useState(false);
@@ -131,10 +133,28 @@ export default function Materials() {
     null
   );
 
-  const filteredRequests = requests.filter((r) => {
-    if (status === "all") return true;
-    return r.status.toLowerCase() === status;
-  });
+const filteredRequests = requests.filter((r) => {
+  // 🟣 status filter
+  const matchStatus =
+    status === "all" || r.status.toLowerCase() === status;
+
+  const matchSearch = search
+    ? `${r.requestNo}
+       ${r.requestedBy}
+       ${r.projectName}
+       ${r.projectCode}
+       ${r.material}
+       ${r.quantity}
+       ${r.spec}
+       ${r.supplier}
+       ${r.status}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    : true;
+
+  return matchStatus && matchSearch;
+});
+
 
   return (
     <div className="space-y-6">
@@ -296,6 +316,11 @@ export default function Materials() {
                 ))}
               </tbody>
             </table>
+                  {filteredRequests.length === 0 && (
+            <p className="text-center text-sm text-[#6B7280] py-8">
+              No projects found
+            </p>
+          )}
           </div>
         </div>
 

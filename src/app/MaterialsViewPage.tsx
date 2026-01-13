@@ -6,6 +6,7 @@ import UploadImg from "../assets/uploadimg.png";
 import UploadCamera from "../assets/uploadcameraicon.svg";
 import RequestMaterialModel from "../components/requestMaterialModel";
 import PhotoModel from "../components/photoModel";
+import { useSearch } from "../context/SearchContext";
 type RequestedMaterial = {
   material: string;
   spec: string;
@@ -17,13 +18,28 @@ export default function MaterialsViewPage() {
   const [openPhotoModel, setPhotoModel] = useState(false);
   const initialPhotos = [UploadImg, UploadImg, UploadImg, UploadImg, UploadImg];
   const [photos, setPhotos] = useState<string[]>(initialPhotos);
+  const { search } = useSearch();
 
-const [requestedMaterials, setRequestedMaterials] = useState<RequestedMaterial[]>([
-  {
-    material: "Steel Beams",
-    spec: "Grade A steel required",
-  },
-]);
+  const [requestedMaterials, setRequestedMaterials] = useState<
+    RequestedMaterial[]
+  >([
+    {
+      material: "Steel Beams",
+      spec: "Grade A steel required",
+    },
+  ]);
+
+  const filteredRequestedMaterials = requestedMaterials.filter((item) => {
+    if (!search.trim()) return true;
+
+    const q = search.toLowerCase();
+
+    return (
+      item.material.toLowerCase().includes(q) ||
+      item.spec.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -148,19 +164,16 @@ const [requestedMaterials, setRequestedMaterials] = useState<RequestedMaterial[]
               Requested Material
             </p>
 
-<div className="space-y-2">
-  {requestedMaterials.map((item, idx) => (
-    <div key={idx}>
-      <p className="text-sm font-medium text-[#111827]">
-        {item.material}
-      </p>
-      <p className="text-sm text-[#6B7280] mt-1">
-        {item.spec}
-      </p>
-    </div>
-  ))}
-</div>
-
+            <div className="space-y-2">
+              {filteredRequestedMaterials.map((item, idx) => (
+                <div key={idx}>
+                  <p className="text-sm font-medium text-[#111827]">
+                    {item.material}
+                  </p>
+                  <p className="text-sm text-[#6B7280] mt-1">{item.spec}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <button
@@ -176,20 +189,25 @@ const [requestedMaterials, setRequestedMaterials] = useState<RequestedMaterial[]
             <img src={PlusIcon} alt="" />
             Requests Material
           </button>
-      <RequestMaterialModel
-  open={openRequestModel}
-  onClose={() => setRequestModel(false)}
-  onCreate={(data) => {
-    setRequestedMaterials((prev) => [
-      ...prev,
-      {
-        material: data.material,
-        spec: data.spec,
-      },
-    ]);
-  }}
-/>
+          <RequestMaterialModel
+            open={openRequestModel}
+            onClose={() => setRequestModel(false)}
+            onCreate={(data) => {
+              setRequestedMaterials((prev) => [
+                ...prev,
+                {
+                  material: data.material,
+                  spec: data.spec,
+                },
+              ]);
+            }}
+          />
         </div>
+         {filteredRequestedMaterials.length === 0 && (
+                <p className="text-center text-sm text-[#6B7280] py-8">
+                  No data found
+                </p>
+              )}
       </div>
       <div
         className="
@@ -246,7 +264,7 @@ const [requestedMaterials, setRequestedMaterials] = useState<RequestedMaterial[]
             onUpload={(file, preview) => {
               setPhotos((prev) => [...prev, preview]);
               setPhotoModel(false);
-              console.log(file)
+              console.log(file);
             }}
           />
         </div>

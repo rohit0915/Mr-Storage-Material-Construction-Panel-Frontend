@@ -6,6 +6,7 @@ import EditIcon from "../assets/EditIcon.svg";
 import CustomSelect from "../components/common/CustomSelect";
 import DownloadIcon from "../assets/downloadicon.svg";
 import PdfIcon from "../assets/pdficon.svg";
+import { useSearch } from "../context/SearchContext";
 
 const projectFilterOptions = [
   { label: "Downtown Office Complex", value: "PRJ-001" },
@@ -175,6 +176,9 @@ const statusStyle: Record<string, string> = {
 export default function ProjectViewPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { search } = useSearch();
+  const q = search.trim().toLowerCase();
+  
   const [status, setStatus] = useState("all");
   const [projectName, setProjectName] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -187,6 +191,19 @@ console.log(projectName)
   }, [location.state]);
 
   const [activeProject, setActiveProject] = useState<any>(null);
+const filteredDeliverables = activeProject?.deliverables?.filter(
+  (d: any) => !q || d.text.toLowerCase().includes(q)
+);
+const filteredFiles = activeProject?.files?.filter(
+  (f: any) => !q || f.name.toLowerCase().includes(q)
+);
+const filteredPhases = activeProject?.phases?.filter(
+  (p: any) =>
+    !q ||
+    p.title.toLowerCase().includes(q) ||
+    p.status.toLowerCase().includes(q)
+);
+
 
   useEffect(() => {
     if (status !== "all") {
@@ -333,7 +350,7 @@ console.log(projectName)
         <h3 className="text-lg font-semibold mb-6">Key Deliverables</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {activeProject?.deliverables?.map((item: any) => (
+          {filteredDeliverables?.map((item: any) => (
             <div
               key={item.id}
               className="flex items-center gap-4 bg-[#F9FAFB] rounded-[8px] px-5 py-4"
@@ -353,7 +370,7 @@ console.log(projectName)
         </h3>
 
         <div className="space-y-5">
-          {activeProject?.phases?.map((phase: any, idx: number) => (
+          {filteredPhases?.map((phase: any, idx: number) => (
             <div
               key={idx}
               className="flex items-center justify-between rounded-[8px] shadow px-5 py-4"
@@ -408,7 +425,7 @@ console.log(projectName)
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 sm:grid-cols-2 gap-3">
-          {activeProject?.files?.slice().reverse().map((file: any, idx: number) => (
+          {filteredFiles?.slice().reverse().map((file: any, idx: number) => (
             <div
               key={idx}
               className="flex items-center justify-between rounded-xl border px-5 py-4"

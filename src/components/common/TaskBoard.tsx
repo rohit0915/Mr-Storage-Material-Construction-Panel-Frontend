@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DailyLogModel from "../dailyLogModel";
 import NewTaskModel from "../newTaskModel";
 import RightCheckIcon from "../../assets/RightTickIcon";
+import { useSearch } from "../../context/SearchContext";
 
 type TaskPriority = "High" | "Medium" | "Low";
 
@@ -86,6 +87,22 @@ export default function TaskBoard() {
   const [openDailyLogModel, setDailyLogModel] = useState(false);
   const [openNewTaskModel, setNewTaskModel] = useState(false);
   const [tasks, setTasks] = useState(initialTasks);
+const { search } = useSearch();
+const filterTasksBySearch = (list: Task[]) => {
+  if (!search.trim()) return list;
+
+  const q = search.toLowerCase();
+
+  return list.filter((task) =>
+    `${task.title}
+     ${task.project}
+     ${task.description}
+     ${task.assignee}
+     ${task.priority}`
+      .toLowerCase()
+      .includes(q)
+  );
+};
 
   const handleNewTask = (data: any) => {
     const newTask: Task = {
@@ -166,19 +183,19 @@ export default function TaskBoard() {
 
       <div className="overflow-auto scroll-hide w-[calc(100vw-50px)] lg:w-[calc(100vw-388px)]">
         <div className="grid grid-cols-3 lg:gap-6 gap-3 min-w-[800px]">
-          <Column title={`To Do (${tasks.todo.length})`} bg="bg-[#F9FAFB]">
-            {tasks.todo.map(renderTask)}
+          <Column title={`To Do (${filterTasksBySearch(tasks.todo).length})`} bg="bg-[#F9FAFB]">
+            {filterTasksBySearch(tasks.todo).map(renderTask)}
           </Column>
 
           <Column
-            title={`In Progress (${tasks.inProgress.length})`}
+            title={`In Progress (${filterTasksBySearch(tasks.inProgress).length})`}
             bg="bg-[#EFF6FF]"
           >
-            {tasks.inProgress.map(renderTask)}
+            {filterTasksBySearch(tasks.inProgress).map(renderTask)}
           </Column>
 
-          <Column title={`Done (${tasks.done.length})`} bg="bg-[#F0FDF4]">
-            {tasks.done.map(renderTask)}
+          <Column title={`Done (${filterTasksBySearch(tasks.done).length})`} bg="bg-[#F0FDF4]">
+            {filterTasksBySearch(tasks.done).map(renderTask)}
           </Column>
         </div>
       </div>
