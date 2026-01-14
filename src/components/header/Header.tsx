@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import BellIcon from "../../assets/bellicon.svg";
 import SearchIcon from "../../assets/searchIcon.svg";
-import Logo from "../../assets/logo.svg";
+import Logo from "../../assets/steel building depot logo file Final without BG.png";
 import { useSearch } from "../../context/SearchContext";
 
 type Props = {
@@ -188,7 +188,7 @@ export default function Header({ count, onToggleSidebar }: Props) {
           )}
         </div>
 
-        <img src={Logo} alt="" className="w-[80px] sm:w-[100px] lg:w-[150px]" />
+        <img src={Logo} alt="" className="w-[100px] sm:w-[140px] lg:w-[170px] xl:w-[220px]" />
       </div>
     </header>
   );

@@ -5,10 +5,10 @@ export default function FilterTabs() {
   const { activeDate,setActiveDate } = useSidebar();
 
 
-  const baseBtn = "relative w-56 text-white font-medium transition-all";
+  const baseBtn = "relative lg:w-56 sm:w-40 w-32 text-white font-medium transition-all";
 
   return (
-    <div className="absolute -left-8 -right-8 -top-16 flex h-10 bg-[#89D5DC] overflow-hidden">
+    <div className="absolute lg:-left-8 -left-3 lg:-right-8 -right-3 -top-16 flex h-10 bg-[#89D5DC] overflow-hidden">
       <button
         onClick={() => setActiveDate("today")}
         className={`${baseBtn} ${activeDate === "today" ? "bg-[#89D5DC]" : "bg-[#6B93CE99]"}`}
