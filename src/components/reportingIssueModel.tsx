@@ -82,6 +82,7 @@ export default function IssueReportingModal({
                   value={project}
                   onChange={setProject}
                   width="100%"
+                  searchable
                 />
               </div>
             </div>

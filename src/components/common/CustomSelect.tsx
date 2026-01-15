@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Option = {
   label: string;
@@ -12,6 +12,7 @@ type CustomSelectProps = {
   onChange: (value: string) => void;
   width?: string;
   upperSide?: boolean;
+  searchable?: boolean;
 };
 
 export default function CustomSelect({
@@ -21,10 +22,11 @@ export default function CustomSelect({
   onChange,
   width = "150px",
   upperSide = false,
+  searchable,
 }: CustomSelectProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -35,8 +37,14 @@ export default function CustomSelect({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const selectedLabel =
-    options.find((o) => o.value === value)?.label || title;
+  const selectedLabel = options.find((o) => o.value === value)?.label || title;
+
+    const filteredOptions = useMemo(() => {
+    if (!searchable || !searchQuery) return options;
+    return options.filter((opt) =>
+      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [options, searchQuery, searchable]);
 
   return (
     <div ref={ref} className="relative" style={{ width }}>
@@ -52,15 +60,17 @@ export default function CustomSelect({
         <span className="truncate text-[#111827]">{selectedLabel}</span>
 
         <svg
-          className={`w-4 h-4 transition-transform ${
-            open ? "rotate-180" : ""
-          }`}
+          className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
           strokeWidth={2}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -72,7 +82,19 @@ export default function CustomSelect({
             ${upperSide ? "bottom-full mb-2" : "top-full mt-2"}
           `}
         >
-          {options.map((opt) => {
+                    {searchable && (
+            <div className="px-4 py-2 border-b">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-0"
+              />
+            </div>
+          )}
+
+          {filteredOptions.map((opt) => {
             const selected = opt.value === value;
             return (
               <button
@@ -97,7 +119,11 @@ export default function CustomSelect({
                     stroke="currentColor"
                     strokeWidth={3}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 )}
               </button>
@@ -108,4 +134,3 @@ export default function CustomSelect({
     </div>
   );
 }
-

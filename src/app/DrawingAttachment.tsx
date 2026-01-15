@@ -7,6 +7,7 @@ import DownloadIcon from "../assets/downloadicon.svg";
 import DrawingModel from "../components/drawingModel";
 import DrawingPreviewModal from "../components/drawingPreviewModel";
 import { useSearch } from "../context/SearchContext";
+import SuccessModal from "../components/common/SuccessModal";
 const initialDummyProjects = [
   {
     name: "ABC Logistics Warehouse",
@@ -123,46 +124,59 @@ const statusStyle: Record<string, string> = {
 };
 
 export default function DrawingAttachment() {
-  const [openDrawingModel, setDrawingModel] = useState(false);
   const [openDrawingPreviewModel, setDrawingPreviewModel] = useState(false);
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const { search } = useSearch();
   const [localSearch, setLocalSearch] = useState("");
   const [projects, setProjects] = useState<Project[]>(initialDummyProjects);
+  const [pendingData, setPendingData] = useState(null);
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [openDrawingModel, setDrawingModel] = useState(false);
 
-const filteredProjects = projects
-  .map((project) => {
-    const query = `${search} ${localSearch}`.trim().toLowerCase();
+  const onDrawingSubmit = (data: any) => {
+    setPendingData(data);
+    setDrawingModel(false);
+    setSuccessOpen(true);
+  };
 
-    if (!query) return project;
+  const onSuccessClose = () => {
+    setSuccessOpen(false);
 
-    // 🔹 project level match
-    const projectMatch =
-      project.name.toLowerCase().includes(query) ||
-      project.code.toLowerCase().includes(query) ||
-      project.uploadedBy.toLowerCase().includes(query) ||
-      project.location.toLowerCase().includes(query) ||
-      project.updatedOn.toLowerCase().includes(query);
-
-    // 🔹 file level match
-    const matchedFiles = project.files.filter((file) =>
-      file.name.toLowerCase().includes(query)
-    );
-
-    if (projectMatch) return project;
-
-    if (matchedFiles.length > 0) {
-      return {
-        ...project,
-        files: matchedFiles,
-      };
+    if (pendingData) {
+      handleUpload(pendingData);
+      setPendingData(null);
     }
+  };
+  const filteredProjects = projects
+    .map((project) => {
+      const query = `${search} ${localSearch}`.trim().toLowerCase();
 
-    return null;
-  })
-  .filter(Boolean) as Project[];
+      if (!query) return project;
 
+      const projectMatch =
+        project.name.toLowerCase().includes(query) ||
+        project.code.toLowerCase().includes(query) ||
+        project.uploadedBy.toLowerCase().includes(query) ||
+        project.location.toLowerCase().includes(query) ||
+        project.updatedOn.toLowerCase().includes(query);
+
+      const matchedFiles = project.files.filter((file) =>
+        file.name.toLowerCase().includes(query)
+      );
+
+      if (projectMatch) return project;
+
+      if (matchedFiles.length > 0) {
+        return {
+          ...project,
+          files: matchedFiles,
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean) as Project[];
 
   const handleUpload = ({
     file,
@@ -186,7 +200,6 @@ const filteredProjects = projects
         (project) => project.code === projectCode
       );
 
-      // ✅ If project already exists → file add karo (top me)
       if (projectExists) {
         return prev.map((project) =>
           project.code === projectCode
@@ -199,7 +212,6 @@ const filteredProjects = projects
         );
       }
 
-      // ✅ If new project → pura card upar add hoga
       const newProject: Project = {
         name: projectName,
         code: projectCode,
@@ -371,11 +383,16 @@ const filteredProjects = projects
       </div>
       <DrawingModel
         open={openDrawingModel}
-        onSubmit={(data) => handleUpload(data)}
-        onClose={() => {
-          setDrawingModel(false);
-        }}
+        onSubmit={onDrawingSubmit}
+        onClose={() => setDrawingModel(false)}
       />
+
+      <SuccessModal
+        open={successOpen}
+        title="File Uploaded Successfully"
+        onClose={onSuccessClose}
+      />
+
       <DrawingPreviewModal
         open={openDrawingPreviewModel}
         fileId={selectedFileId ?? ""}

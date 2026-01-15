@@ -265,6 +265,7 @@ const filteredPhases = activeProject?.phases?.filter(
               );
             }}
             width="250px"
+            searchable
           />
 
           <button className="flex items-center gap-2 bg-[#3F63E1] text-white px-5 rounded-lg h-[36px] min-w-fit text-sm font-medium hover:opacity-90">

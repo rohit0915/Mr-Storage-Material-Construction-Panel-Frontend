@@ -55,12 +55,12 @@ export default function Header({ count, onToggleSidebar }: Props) {
           <div className="flex gap-2 items-center px-2 border border-[#D1D5DB] rounded-[8px] h-[38px]">
             <img src={SearchIcon} alt="" />
             <input
-  type="text"
-  placeholder="Search leads, projects..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  className="text-[14px] outline-none lg:min-w-[256px] sm:w-[130px] w-[80px]"
-/>
+              type="text"
+              placeholder="Search leads, projects..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="text-[14px] outline-none lg:min-w-[256px] sm:w-[130px] w-[80px]"
+            />
           </div>
         )}
       </div>
@@ -188,7 +188,11 @@ export default function Header({ count, onToggleSidebar }: Props) {
           )}
         </div>
 
-        <img src={Logo} alt="" className="w-[100px] sm:w-[140px] lg:w-[170px] xl:w-[220px]" />
+        <img
+          src={Logo}
+          alt=""
+          className="w-[100px] sm:w-[140px] lg:w-[170px] xl:w-[220px]"
+        />
       </div>
     </header>
   );

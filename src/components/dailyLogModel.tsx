@@ -128,6 +128,7 @@ export default function DailyLogModel({
                 value={project}
                 onChange={setProject}
                 width="100%"
+                searchable
               />
             </div>
           </div>
@@ -143,6 +144,7 @@ export default function DailyLogModel({
                 value={task}
                 onChange={setTask}
                 width="100%"
+                searchable
               />
             </div>
 

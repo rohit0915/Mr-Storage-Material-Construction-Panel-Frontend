@@ -3,6 +3,7 @@ import DailyLogModel from "../dailyLogModel";
 import NewTaskModel from "../newTaskModel";
 import RightCheckIcon from "../../assets/RightTickIcon";
 import { useSearch } from "../../context/SearchContext";
+import SuccessModal from "./SuccessModal";
 
 type TaskPriority = "High" | "Medium" | "Low";
 
@@ -87,33 +88,39 @@ export default function TaskBoard() {
   const [openDailyLogModel, setDailyLogModel] = useState(false);
   const [openNewTaskModel, setNewTaskModel] = useState(false);
   const [tasks, setTasks] = useState(initialTasks);
-const { search } = useSearch();
-const filterTasksBySearch = (list: Task[]) => {
-  if (!search.trim()) return list;
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [successTitle, setSuccessTitle] = useState("");
+  const [afterSuccessAction, setAfterSuccessAction] = useState<
+    (() => void) | null
+  >(null);
 
-  const q = search.toLowerCase();
+  const { search } = useSearch();
+  const filterTasksBySearch = (list: Task[]) => {
+    if (!search.trim()) return list;
 
-  return list.filter((task) =>
-    `${task.title}
+    const q = search.toLowerCase();
+
+    return list.filter((task) =>
+      `${task.title}
      ${task.project}
      ${task.description}
      ${task.assignee}
      ${task.priority}`
-      .toLowerCase()
-      .includes(q)
-  );
-};
+        .toLowerCase()
+        .includes(q)
+    );
+  };
 
   const handleNewTask = (data: any) => {
     const newTask: Task = {
-      id: Date.now().toString(), // simple unique id
+      id: Date.now().toString(),
       title: data.taskName,
       project: data.project,
       description: data.description,
       priority: capitalizeFirstLetter(data.priority) as TaskPriority,
       due: data.deadline || "NA",
       assignee: data.assignedTo,
-      status: data.status, // todo / inProgress / done
+      status: data.status,
     };
 
     setTasks((prev) => {
@@ -129,18 +136,18 @@ const filterTasksBySearch = (list: Task[]) => {
   const handleDailyLogSubmit = (data: any) => {
     const newTask: Task = {
       id: Date.now().toString(),
-      title: data.task, // Task name
-      project: data.project, // Project
-      description: data.description, // Work description
-      progress: Number(data.progress), // % progress
-      priority: "Medium", // default
-      due: "NA", // In progress task
-      assignee: "You", // current user
+      title: data.task,
+      project: data.project,
+      description: data.description,
+      progress: Number(data.progress),
+      priority: "Medium",
+      due: "NA",
+      assignee: "You",
     };
 
     setTasks((prev) => ({
       ...prev,
-      inProgress: [newTask, ...prev.inProgress], // 🔥 sirf inProgress
+      inProgress: [newTask, ...prev.inProgress],
     }));
   };
 
@@ -169,32 +176,64 @@ const filterTasksBySearch = (list: Task[]) => {
             open={openDailyLogModel}
             onClose={() => setDailyLogModel(false)}
             onSubmit={(data) => {
-              handleDailyLogSubmit(data);
+              setAfterSuccessAction(() => () => {
+                handleDailyLogSubmit(data);
+                setDailyLogModel(false);
+              });
+              setSuccessTitle("Work Log Added Successfully");
+              setSuccessOpen(true);
             }}
           />
 
           <NewTaskModel
             open={openNewTaskModel}
-            onSubmit={handleNewTask}
+            onSubmit={(data) => {
+              setAfterSuccessAction(() => () => {
+                handleNewTask(data);
+                setNewTaskModel(false);
+              });
+              setSuccessTitle("Task Added Successfully");
+              setSuccessOpen(true);
+            }}
             onClose={() => setNewTaskModel(false)}
+          />
+
+          <SuccessModal
+            open={successOpen}
+            title={successTitle}
+            onClose={() => {
+              setSuccessOpen(false);
+              if (afterSuccessAction) {
+                afterSuccessAction();
+                setAfterSuccessAction(null);
+              }
+            }}
           />
         </div>
       </div>
 
       <div className="overflow-auto scroll-hide w-[calc(100vw-50px)] lg:w-[calc(100vw-388px)]">
         <div className="grid grid-cols-3 lg:gap-6 gap-3 min-w-[800px]">
-          <Column title={`To Do (${filterTasksBySearch(tasks.todo).length})`} bg="bg-[#F9FAFB]">
+          <Column
+            title={`To Do (${filterTasksBySearch(tasks.todo).length})`}
+            bg="bg-[#F9FAFB]"
+          >
             {filterTasksBySearch(tasks.todo).map(renderTask)}
           </Column>
 
           <Column
-            title={`In Progress (${filterTasksBySearch(tasks.inProgress).length})`}
+            title={`In Progress (${
+              filterTasksBySearch(tasks.inProgress).length
+            })`}
             bg="bg-[#EFF6FF]"
           >
             {filterTasksBySearch(tasks.inProgress).map(renderTask)}
           </Column>
 
-          <Column title={`Done (${filterTasksBySearch(tasks.done).length})`} bg="bg-[#F0FDF4]">
+          <Column
+            title={`Done (${filterTasksBySearch(tasks.done).length})`}
+            bg="bg-[#F0FDF4]"
+          >
             {filterTasksBySearch(tasks.done).map(renderTask)}
           </Column>
         </div>

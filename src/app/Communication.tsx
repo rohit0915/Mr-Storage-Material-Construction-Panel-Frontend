@@ -94,7 +94,7 @@ export default function Communication() {
               </button>
             </div>
 
-            <div className="p-2 space-y-1 h-[calc(100vh-415px)] overflow-auto scroll-hide">
+            <div className="p-2 space-y-1 h-[calc(100vh-413px)] overflow-auto scroll-hide">
               {activeTab === "departments" &&
                 departments.map((item) => (
                   <div
@@ -171,7 +171,7 @@ export default function Communication() {
                 ))}
             </div>
 
-            <div className="p-4 border-t text-[#4B5563] flex justify-center h-[61px]">
+            <div className="p-4 border-t text-[#4B5563] flex justify-center h-[58px]">
               <span className="text-sm flex justify-center items-center font-medium">+ New Chat</span>
             </div>
           </div>

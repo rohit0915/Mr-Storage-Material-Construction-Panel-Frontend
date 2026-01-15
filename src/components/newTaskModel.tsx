@@ -124,6 +124,7 @@ export default function NewTaskModel({
                 value={selectedProject}
                 onChange={setSelectedProject}
                 width="100%"
+                searchable
               />
             </div>
           </div>
@@ -139,6 +140,7 @@ export default function NewTaskModel({
                 value={assignedTo}
                 onChange={setAssignedTo}
                 width="100%"
+                searchable
               />
             </div>
 

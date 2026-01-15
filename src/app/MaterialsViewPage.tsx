@@ -7,10 +7,16 @@ import UploadCamera from "../assets/uploadcameraicon.svg";
 import RequestMaterialModel from "../components/requestMaterialModel";
 import PhotoModel from "../components/photoModel";
 import { useSearch } from "../context/SearchContext";
+import SuccessModal from "../components/common/SuccessModal";
 type RequestedMaterial = {
   material: string;
   spec: string;
 };
+
+interface Material {
+  material: string;
+  spec: string;
+}
 
 export default function MaterialsViewPage() {
   const navigate = useNavigate();
@@ -19,6 +25,9 @@ export default function MaterialsViewPage() {
   const initialPhotos = [UploadImg, UploadImg, UploadImg, UploadImg, UploadImg];
   const [photos, setPhotos] = useState<string[]>(initialPhotos);
   const { search } = useSearch();
+  const [successOpen, setSuccessOpen] = useState(false);
+const [successTitle, setSuccessTitle] = useState(""); 
+const [tempMaterial, setTempMaterial] = useState<Material | null>(null);
 
   const [requestedMaterials, setRequestedMaterials] = useState<
     RequestedMaterial[]
@@ -189,25 +198,38 @@ export default function MaterialsViewPage() {
             <img src={PlusIcon} alt="" />
             Requests Material
           </button>
+          
           <RequestMaterialModel
             open={openRequestModel}
             onClose={() => setRequestModel(false)}
             onCreate={(data) => {
-              setRequestedMaterials((prev) => [
-                ...prev,
-                {
-                  material: data.material,
-                  spec: data.spec,
-                },
-              ]);
+              setSuccessTitle("Material Requested Successfully");
+              setTempMaterial({
+                material: data.material,
+                spec: data.spec,
+              });
+              setRequestModel(false);
+              setSuccessOpen(true);
+            }}
+          />
+
+          <SuccessModal
+            open={successOpen}
+            title={successTitle}
+            onClose={() => {
+              if (tempMaterial) {
+                setRequestedMaterials((prev) => [...prev, tempMaterial]);
+                setTempMaterial(null);
+              }
+              setSuccessOpen(false);
             }}
           />
         </div>
-         {filteredRequestedMaterials.length === 0 && (
-                <p className="text-center text-sm text-[#6B7280] py-8">
-                  No data found
-                </p>
-              )}
+        {filteredRequestedMaterials.length === 0 && (
+          <p className="text-center text-sm text-[#6B7280] py-8">
+            No data found
+          </p>
+        )}
       </div>
       <div
         className="
@@ -243,13 +265,13 @@ export default function MaterialsViewPage() {
           <div
             onClick={() => setPhotoModel(true)}
             className="
-      h-[150px]
-      rounded-lg border-2 border-dashed
-      flex flex-col items-center justify-center
-      text-center cursor-pointer
-      text-[#6B7280]
-      hover:bg-[#F9FAFB]
-    "
+              h-[150px]
+              rounded-lg border-2 border-dashed
+              flex flex-col items-center justify-center
+              text-center cursor-pointer
+              text-[#6B7280]
+              hover:bg-[#F9FAFB]
+            "
           >
             <div className="text-2xl mb-2">
               <img src={UploadCamera} alt="" />
@@ -262,6 +284,8 @@ export default function MaterialsViewPage() {
             open={openPhotoModel}
             onClose={() => setPhotoModel(false)}
             onUpload={(file, preview) => {
+              setSuccessTitle("Photo Uploaded Successfully");
+              setSuccessOpen(true);
               setPhotos((prev) => [...prev, preview]);
               setPhotoModel(false);
               console.log(file);

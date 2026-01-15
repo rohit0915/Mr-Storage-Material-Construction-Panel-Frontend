@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import UploadIcon from "../assets/uploadicon copy.svg";
 import CloseIcon from "../assets/closeicon.svg";
-import CustomSelect from "./common/CustomSelect";
 
 const allowedTypes = [
   "text/csv",
@@ -11,39 +10,24 @@ const allowedTypes = [
 
 const maxSizeMB = 50;
 
-type IssueReportingModalProps = {
+type UploadWorkLogFileModalProps = {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: {
     file: File;
-    projectCode: string;
-    projectName: string; 
   }) => void;
-  requestId?: string | null;
 };
 
-const projectFilterOptions = [
-  { label: "Downtown Office Complex", value: "PRJ-001" },
-  { label: "Residential Tower A", value: "PRJ-002" },
-  { label: "Shopping Mall Renovation", value: "PRJ-003" },
-  { label: "Industrial Warehouse", value: "PRJ-004" },
-];
-
-export default function DrawingModel({
+export default function UploadWorkLogFileModal({
   open,
   onClose,
   onSubmit,
-}: IssueReportingModalProps) {
+}: UploadWorkLogFileModalProps) {
   if (!open) return null;
 
-  const [status, setStatus] = useState("all");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const selectedProject = projectFilterOptions.find(
-    (p) => p.value === status
-  );
 
   const handleFile = (selectedFile: File) => {
     setError(null);
@@ -54,7 +38,7 @@ export default function DrawingModel({
     }
 
     if (selectedFile.size > maxSizeMB * 1024 * 1024) {
-      setError("File size must be less than 10MB");
+      setError("File size must be less than 50MB");
       return;
     }
 
@@ -62,14 +46,14 @@ export default function DrawingModel({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       handleFile(e.target.files[0]);
     }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer.files?.[0]) {
       handleFile(e.dataTransfer.files[0]);
     }
   };
@@ -80,12 +64,7 @@ export default function DrawingModel({
       return;
     }
 
-    onSubmit({
-      file,
-      projectCode: status,
-      projectName: selectedProject?.label ?? "New Project",
-    });
-
+    onSubmit({ file });
     onClose();
   };
 
@@ -98,13 +77,13 @@ export default function DrawingModel({
         className="w-[96%] max-w-[486px] bg-white rounded-xl shadow-lg overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="lg:px-6 px-3 py-4 border-b flex items-center justify-between gap-2">
+        <div className="lg:px-6 px-3 py-4 border-b flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[#111827]">
             Upload Drawings & Images
           </h2>
           <img
             src={CloseIcon}
-            alt=""
+            alt="close"
             className="w-3 cursor-pointer"
             onClick={onClose}
           />
@@ -112,20 +91,22 @@ export default function DrawingModel({
 
         <div className="p-6 space-y-3">
           <div
-            className="border-2 border-dashed rounded-lg p-6 flex items-center justify-center text-center gap-2 cursor-pointer"
+            className="border-2 border-dashed rounded-lg p-6 flex items-center justify-center cursor-pointer"
             onClick={() => inputRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
           >
-            <div className="flex-1 flex flex-col gap-3 items-center justify-center">
-              <div className="text-2xl">
-                <img src={UploadIcon} alt="" />
-              </div>
+            <div className="flex flex-col items-center gap-3 text-center">
+              <img src={UploadIcon} alt="" />
 
               {!file ? (
                 <>
-                  <p className="text-sm text-[#6B7280]">Drop your file here</p>
-                  <p className="text-xs text-[#9CA3AF]">or click to browse</p>
+                  <p className="text-sm text-[#6B7280]">
+                    Drop your file here
+                  </p>
+                  <p className="text-xs text-[#9CA3AF]">
+                    or click to browse
+                  </p>
                 </>
               ) : (
                 <>
@@ -140,15 +121,6 @@ export default function DrawingModel({
               )}
             </div>
 
-            <div className="flex-1 flex justify-center items-center">
-                <button
-                  type="button"
-                  className="mt-2 bg-[#2563EB] text-white px-6 py-2 rounded-lg text-sm"
-                >
-                  Choose file
-                </button>
-            </div>
-
             <input
               ref={inputRef}
               type="file"
@@ -159,37 +131,20 @@ export default function DrawingModel({
           </div>
 
           {error ? (
-            <p className="text-xs text-red-500 mt-2">{error}</p>
+            <p className="text-xs text-red-500">{error}</p>
           ) : (
-            <div className="text-xs text-[#9CA3AF] mt-2">
-              Supported formats: CSV, Excel (.xlsx, .xls) <br />
+            <p className="text-xs text-[#9CA3AF]">
+              Supported formats: CSV, Excel (.xlsx, .xls)
+              <br />
               Required columns: Company, Contact, Email
-            </div>
+            </p>
           )}
-
-          <div>
-            <label
-              className="text-sm text-[#111827] mb-2 inline-block"
-              htmlFor=""
-            >
-              Projects
-            </label>
-            <CustomSelect
-              title="All Projects"
-              options={projectFilterOptions}
-              value={status}
-              onChange={setStatus}
-              width="100%"
-              upperSide
-              searchable
-            />
-          </div>
         </div>
 
         <div className="px-6 py-4 border-t flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-6 py-2 rounded-lg bg-[#F3F4F6] text-[#111827]"
+            className="px-6 py-2 rounded-lg bg-[#F3F4F6]"
           >
             Cancel
           </button>

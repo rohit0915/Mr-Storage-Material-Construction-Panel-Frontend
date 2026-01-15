@@ -18,12 +18,13 @@ import ShieldIcon from "../assets/safetyscoreicon.svg";
 import FilterTabs from "../components/common/FilterTabs";
 import type { Dayjs } from "dayjs";
 import { useSidebar } from "../context/SidebarContext";
+import SuccessModal from "../components/common/SuccessModal";
 
 type StatsTab = "today" | "week" | "month";
 
 export default function Dashboard() {
 const {activeDate:activeTab} = useSidebar();
-  const stats: Record<StatsTab, StatItem[]> = {
+const stats: Record<StatsTab, StatItem[]> = {
   today: [
     { key: "activeProjects", title: "Active Projects", value: 2, icon: FolderIcon },
     { key: "completionRate", title: "Completion Rate", value: "65%", icon: MoneyIcon },
@@ -47,7 +48,8 @@ const {activeDate:activeTab} = useSidebar();
   const [manager, setManager] = useState("all");
   const [startDate, setStartDate] = useState<Dayjs | null>(null);
   const [endDate, setEndDate] = useState<Dayjs | null>(null);
-  
+  const [successOpen, setSuccessOpen] = useState(false);
+
   return (
     <div className=" mt-10 space-y-6 relative">
       <FilterTabs  />
@@ -58,10 +60,18 @@ const {activeDate:activeTab} = useSidebar();
             <p className="text-[#4B5563] lg:text-[16px] text-[14px]">Construction Department Performance</p>
           </div>
           <div>
-            <button className="bg-[#2563EB] h-[42px] gap-2 text-[16px] flex justify-center items-center text-white px-4 py-2 rounded-[8px]">
+            <button onClick={()=>setSuccessOpen(true)} className="bg-[#2563EB] h-[42px] gap-2 text-[16px] flex justify-center items-center text-white px-4 py-2 rounded-[8px]">
               <img src={ExportIcon} alt="" />
-              Export Report</button>
+              Export Report
+            </button>
+
+            <SuccessModal
+              open={successOpen}
+              title="Report Exported Successfully"
+              onClose={() => setSuccessOpen(false)}
+            />
           </div>
+
         </div>
         <StatsOverview
           stats={stats[activeTab as StatsTab ]}

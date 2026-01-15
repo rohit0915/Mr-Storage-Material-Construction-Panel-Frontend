@@ -7,6 +7,7 @@ import FolderIcon from "../assets/growthicon.svg";
 import BoxIcon from "../assets/resourcicon.svg";
 import ClockIcon from "../assets/ClockIcon";
 import ShieldCheckIcon from "../assets/SieldIcon";
+import SuccessModal from "../components/common/SuccessModal";
 
 const stats: StatItem[] = [
   {
@@ -195,7 +196,7 @@ const isWithinTimeFilter = (date: string, time: string) => {
 export default function Reports() {
   const [time, setTime] = useState("all");
   const [projectName, setProjectName] = useState("all");
-
+  const [successOpen, setSuccessOpen] = useState(false);
   const filteredRows = rows.filter((row) => {
     const projectMatch =
       projectName === "all"
@@ -239,12 +240,22 @@ export default function Reports() {
               value={projectName}
               onChange={setProjectName}
               width="250px"
+              searchable
             />
 
-            <button className="bg-[#2563EB] h-[38px] gap-2 text-[14px] flex justify-center items-center text-white px-4 rounded-[8px]">
+            <button
+              onClick={() => setSuccessOpen(true)}
+              className="bg-[#2563EB] h-[38px] gap-2 text-[14px] flex justify-center items-center text-white px-4 rounded-[8px]"
+            >
               <img src={ExportIcon} alt="" />
               Export Report
             </button>
+            
+            <SuccessModal
+              open={successOpen}
+              title="Report Exported Successfully"
+              onClose={() => setSuccessOpen(false)}
+            />
           </div>
         </div>
 

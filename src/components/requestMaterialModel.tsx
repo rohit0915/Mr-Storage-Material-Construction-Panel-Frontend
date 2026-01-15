@@ -35,162 +35,166 @@ export default function RequestMaterialModel({
   const [descriptionError, setDescriptionError] = useState("");
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={onClose}
-    >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div
-          className="md:max-w-[640px] w-[96%] bg-white rounded-xl shadow-lg overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="lg:px-6 px-3 py-4 border-b">
-            <h2 className="text-lg font-semibold text-[#111827]">
-              Request Material
-            </h2>
-          </div>
-
-          <div className="p-6 space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-[#111827] mb-2 inline-block">
-                  Date
-                </label>
-
-                <DatePicker
-                  value={date}
-                  onChange={setDate}
-                  format="DD-MM-YYYY"
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      sx: inputStyle,
-                    },
-                  }}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-[#111827] inline-block mb-2">
-                  Project
-                </label>
-                <CustomSelect
-                  title="All Requests"
-                  options={projectFilterOptions}
-                  value={project}
-                  onChange={setProject}
-                  width="100%"
-                />
-              </div>
+    <>
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        onClick={onClose}
+      >
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <div
+            className="md:max-w-[640px] w-[96%] bg-white rounded-xl shadow-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="lg:px-6 px-3 py-4 border-b">
+              <h2 className="text-lg font-semibold text-[#111827]">
+                Request Material
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-6 space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-[#111827] mb-2 inline-block">
+                    Date
+                  </label>
+
+                  <DatePicker
+                    value={date}
+                    onChange={setDate}
+                    format="DD-MM-YYYY"
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        sx: inputStyle,
+                      },
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-[#111827] inline-block mb-2">
+                    Project
+                  </label>
+                  <CustomSelect
+                    title="All Requests"
+                    options={projectFilterOptions}
+                    value={project}
+                    onChange={setProject}
+                    width="100%"
+                    searchable
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-[#111827]">Material Name</label>
+                  <input
+                    placeholder="e.g., Steel Beams"
+                    className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+                    value={material}
+                    onChange={(e) => {
+                      setMaterial(e.target.value);
+                      if (materialError) setMaterialError("");
+                    }}
+                  />
+
+                  {materialError && (
+                    <p className="text-xs text-red-500 mt-1">{materialError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="text-sm text-[#111827]">Quantity</label>
+                  <input
+                    placeholder="e.g., 50 units"
+                    type="number"
+                    className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="text-sm text-[#111827]">Material Name</label>
-                <input
-                  placeholder="e.g., Steel Beams"
-                  className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
-                  value={material}
+                <label className="text-sm text-[#111827]">Description</label>
+                <textarea
+                  placeholder="Please provide the grade A steel."
+                  rows={4}
+                  className="mt-2 w-full rounded-[8px] border px-4 py-3 outline-none resize-none text-sm"
+                  value={description}
                   onChange={(e) => {
-                    setMaterial(e.target.value);
-                    if (materialError) setMaterialError("");
+                    setDescription(e.target.value);
+                    if (descriptionError) setDescriptionError("");
                   }}
                 />
 
-                {materialError && (
-                  <p className="text-xs text-red-500 mt-1">{materialError}</p>
+                {descriptionError && (
+                  <p className="text-xs text-red-500 mt-1">{descriptionError}</p>
                 )}
               </div>
-
-              <div>
-                <label className="text-sm text-[#111827]">Quantity</label>
-                <input
-                  placeholder="e.g., 50 units"
-                  type="number"
-                  className="mt-2 w-full h-[40px] rounded-[8px] border px-4 outline-none text-sm"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                />
-              </div>
             </div>
 
-            <div>
-              <label className="text-sm text-[#111827]">Description</label>
-              <textarea
-                placeholder="Please provide the grade A steel."
-                rows={4}
-                className="mt-2 w-full rounded-[8px] border px-4 py-3 outline-none resize-none text-sm"
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  if (descriptionError) setDescriptionError("");
+            <div className="px-6 py-4 border-t flex justify-end gap-3">
+              <button
+                onClick={onClose}
+                className="px-6 py-2 rounded-lg bg-[#F3F4F6] text-[#111827]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  let hasError = false;
+
+                  if (!material.trim()) {
+                    setMaterialError("Material name is required");
+                    hasError = true;
+                  } else {
+                    setMaterialError("");
+                  }
+
+                  if (!description.trim()) {
+                    setDescriptionError("Description is required");
+                    hasError = true;
+                  } else {
+                    setDescriptionError("");
+                  }
+
+                  if (hasError) return;
+
+                  const formattedDate = date
+                    ? dayjs(date).format("DD-MM-YYYY")
+                    : "TBD";
+
+                  onCreate?.({
+                    id: Date.now().toString(),
+                    requestNo: `MR-${Math.floor(100 + Math.random() * 900)}`,
+                    requestedBy: "You",
+                    projectName:
+                      project === "PRJ-001"
+                        ? "Downtown Office Complex"
+                        : "Residential Tower A",
+                    projectCode: project,
+                    material,
+                    quantity: quantity ? `${quantity} units` : "",
+                    spec: description,
+                    needBy: formattedDate,
+                    delivery: "TBD",
+                    status: "Pending",
+                    supplier: "—",
+                  });
+
+                  onClose();
                 }}
-              />
-
-              {descriptionError && (
-                <p className="text-xs text-red-500 mt-1">{descriptionError}</p>
-              )}
+                className="px-6 py-2 rounded-lg bg-[#2563EB] text-white disabled:opacity-50"
+              >
+                Create
+              </button>
             </div>
           </div>
-
-          <div className="px-6 py-4 border-t flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 rounded-lg bg-[#F3F4F6] text-[#111827]"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => {
-                let hasError = false;
-
-                if (!material.trim()) {
-                  setMaterialError("Material name is required");
-                  hasError = true;
-                } else {
-                  setMaterialError("");
-                }
-
-                if (!description.trim()) {
-                  setDescriptionError("Description is required");
-                  hasError = true;
-                } else {
-                  setDescriptionError("");
-                }
-
-                if (hasError) return;
-
-                const formattedDate = date
-                  ? dayjs(date).format("DD-MM-YYYY")
-                  : "TBD";
-
-                onCreate?.({
-                  id: Date.now().toString(),
-                  requestNo: `MR-${Math.floor(100 + Math.random() * 900)}`,
-                  requestedBy: "You",
-                  projectName:
-                    project === "PRJ-001"
-                      ? "Downtown Office Complex"
-                      : "Residential Tower A",
-                  projectCode: project,
-                  material,
-                  quantity: quantity ? `${quantity} units` : "",
-                  spec: description,
-                  needBy: formattedDate,
-                  delivery: "TBD",
-                  status: "Pending",
-                  supplier: "—",
-                });
-
-                onClose();
-              }}
-              className="px-6 py-2 rounded-lg bg-[#2563EB] text-white disabled:opacity-50"
-            >
-              Create
-            </button>
-          </div>
-        </div>
-      </LocalizationProvider>
-    </div>
+        </LocalizationProvider>
+      </div>
+    
+    </>
   );
 }

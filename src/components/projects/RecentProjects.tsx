@@ -129,6 +129,7 @@ const getFilteredProjects = () => {
                 value={project}
                 onChange={setProject}
                 width="100%"
+                searchable
               />
             </div>
 
@@ -172,6 +173,7 @@ const getFilteredProjects = () => {
                 value={manager}
                 onChange={setManager}
                 width="100%"
+                searchable
               />
             </div>
           </div>
